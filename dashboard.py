@@ -2,13 +2,31 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 from datetime import datetime
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import numpy as np
+import requests
+import re
+from io import StringIO
 
 url = 'https://github.com/dudilu/Advisor/blob/main/list_advisor.csv'
-list_advisor = pd.read_csv(url)
+response = requests.get(url)
+html = response.text
+
+pattern = re.compile(':\\[\\[(.*?)\\]\\],')
+matches = pattern.findall(html)
+result = ''.join(matches)
+
+cleaned_string = result.replace('],[', '"\n"').replace('","', '\t')
+
+cleaned_string = '"'+cleaned_string+'"'
+
+data = StringIO(cleaned_string)
+
+list_advisor = pd.read_csv(data, sep='\t', header=None, skiprows=1, names=['Symbol', 'Date', 'Count'])
+
+list_advisor['Count'] = pd.to_numeric(list_advisor['Count'].str.replace('"', ''), errors='coerce')
+
 count_list_advisor = list_advisor
-# list_advisor = pd.read_csv('C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\list_advisor.csv')
 
 list_advisor.set_index('symbol', inplace=True)
 list_advisor = list_advisor['publish'].to_dict()
