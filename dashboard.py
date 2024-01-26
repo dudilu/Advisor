@@ -24,7 +24,7 @@ data = StringIO(cleaned_string)
 
 list_advisor = pd.read_csv(data, sep='\t', header=None, skiprows=1, names=['symbol', 'publish', 'count'])
 
-list_advisor['count'] = pd.to_numeric(list_advisor['Count'].str.replace('"', ''), errors='coerce')
+list_advisor['count'] = pd.to_numeric(list_advisor['count'].str.replace('"', ''), errors='coerce')
 
 count_list_advisor = list_advisor
 
