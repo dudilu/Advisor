@@ -2,11 +2,11 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 from datetime import datetime
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import numpy as np
 
 url = 'https://github.com/dudilu/Advisor/blob/main/list_advisor.csv'
-list_advisor = pd.read_csv(url)
+#list_advisor = pd.read_csv(url)
 count_list_advisor = list_advisor
 # list_advisor = pd.read_csv('C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\list_advisor.csv')
 
