@@ -1,2 +1,2 @@
-yfinance == 0.2.33
+yfina22nce == 0.2.33
 matplotlib
