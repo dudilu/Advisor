@@ -174,7 +174,6 @@ if selected_section:
     if st.button("Send"):
         send_welcome_email(email)
         st.success("Welcome email sent to " + email)
-        sys.exit()
 
     # Display additional information using Streamlit
     st.write("Mean without SPY:", np.round(mean_without_spy, 2))
