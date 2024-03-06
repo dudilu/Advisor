@@ -14,25 +14,19 @@ import sys
 
 # Functions
 def send_welcome_email(email):
-    # Your email credentials
-    sender_email = "your_email@gmail.com"
-    sender_password = "your_password"
+    EMAIL = os.getenv('EMAIL')
+    PASSWORD = os.getenv('PASSWORD')
 
-    subject = "Welcome to Our Website!"
-    message = "Hello! Welcome to our platform. We are excited to have you on board."
+    msg = EmailMessage()
+    msg.set_content("Welcome to our app!")
 
-    # Create the email message
-    msg = MIMEMultipart()
-    msg['From'] = sender_email
-    msg['To'] = email
-    msg['Subject'] = subject
-    msg.attach(MIMEText(message, 'plain'))
+    msg["Subject"] = "Welcome!"
+    msg["From"] = EMAIL
+    msg["To"] = email
 
-    # Connect to the SMTP server
-    with smtplib.SMTP('smtp.gmail.com', 587) as server:
-        server.starttls()
-        server.login(sender_email, sender_password)
-        server.sendmail(sender_email, email, msg.as_string())
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+        smtp.login(EMAIL, base64.b64decode(PASSWORD).decode('utf-8'))
+        smtp.send_message(msg)
         
 url = 'https://github.com/dudilu/Advisor/blob/main/list_advisor.csv'
 response = requests.get(url)
