@@ -7,7 +7,33 @@ import numpy as np
 import requests
 import re
 from io import StringIO
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import sys
 
+# Functions
+def send_welcome_email(email):
+    # Your email credentials
+    sender_email = "your_email@gmail.com"
+    sender_password = "your_password"
+
+    subject = "Welcome to Our Website!"
+    message = "Hello! Welcome to our platform. We are excited to have you on board."
+
+    # Create the email message
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(message, 'plain'))
+
+    # Connect to the SMTP server
+    with smtplib.SMTP('smtp.gmail.com', 587) as server:
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, email, msg.as_string())
+        
 url = 'https://github.com/dudilu/Advisor/blob/main/list_advisor.csv'
 response = requests.get(url)
 html = response.text
@@ -143,6 +169,12 @@ if selected_section:
 selected_section = st.sidebar.button('Mean without SPY')
 if selected_section:
     st.title('Mean without SPY')
+    st.title("Send Welcome Email")
+    email = st.text_input("Enter your email address:")
+    if st.button("Send"):
+        send_welcome_email(email)
+        st.success("Welcome email sent to " + email)
+        sys.exit()
 
     # Display additional information using Streamlit
     st.write("Mean without SPY:", np.round(mean_without_spy, 2))
