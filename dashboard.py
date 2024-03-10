@@ -377,12 +377,12 @@ for symbol in symbols1Q:
     cols = [col for col in df_change1Q.columns if symbol == col.split('_')[0]]
     df_change1Q[symbol] = df_change1Q[cols].mean(axis=1)
 
-logo_dir = 'https://raw.githubusercontent.com/dudilu/Advisor/main/DASH_canva.png'
+logo_dir = 'https://raw.githubusercontent.com/dudilu/Advisor/main'
 
 logo_paths = {}
 
 for symbol in unique_symbols:
-    background_image_path = os.path.join(logo_dir, f'{symbol}_canva.png')
+    background_image_path = f'{logo_dir}/{symbol}_canva.png'
     logo_paths[symbol] = background_image_path
 
 performance = pd.read_csv('https://raw.githubusercontent.com/dudilu/Advisor/main/cumulative_values.csv')
