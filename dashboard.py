@@ -157,8 +157,13 @@ def create_line_chart(container, df, title, chart_height=250, background_image=N
     fig.add_trace(trendline)
 
     if background_image:
-        img = Image.open(background_image)
-        fig.add_layout_image(dict(source=img, x=0, y=1, xref="paper", yref="paper", xanchor="left", yanchor="top", sizex=1, sizey=1))
+        try:
+            response = requests.get(background_image)
+            img = Image.open(BytesIO(response.content))
+            fig.add_layout_image(
+                dict(source=img, x=0, y=1, xref="paper", yref="paper", xanchor="left", yanchor="top", sizex=1, sizey=1))
+        except Exception as e:
+            st.warning(f"Failed to load background image: {e}")
 
     with container:
         st.plotly_chart(fig, use_container_width=True, key=title)
