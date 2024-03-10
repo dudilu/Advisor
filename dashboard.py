@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_option_menu import option_menu
 import yfinance as yf
 import pandas as pd
 from datetime import datetime
@@ -19,6 +18,7 @@ import requests
 from io import BytesIO
 import plotly.express as px
 import plotly.graph_objects as go
+from streamlit_option_menu import option_menu
 
 smtp_server = "smtp.gmail.com"
 smtp_port = 587
