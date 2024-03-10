@@ -373,13 +373,16 @@ for symbol in symbols1Q:
     df_change1Q[symbol] = df_change1Q[cols].mean(axis=1)
 
 
-logo_dir = 'C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\logo\\'
+
+base_url = "https://github.com/dudilu/Advisor/raw/main/logo/"
 
 logo_paths = {}
 
+# Assuming unique_symbols is defined elsewhere
 for symbol in unique_symbols:
-    background_image_path = os.path.join(logo_dir, f'{symbol}_canva.png')
-    logo_paths[symbol] = background_image_path
+    image_url = base_url + f"{symbol}_canva.png"
+    logo_paths[symbol] = image_url
+
 
 
 performance = pd.read_csv('https://raw.githubusercontent.com/dudilu/Advisor/main/cumulative_values.csv')
