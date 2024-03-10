@@ -461,7 +461,26 @@ if selected == "📊 Our Portfolio":
         """,
         unsafe_allow_html=True
     )
-
+    st.markdown(
+    """
+    <style>
+    /* Adjust column widths based on screen size */
+    @media (max-width: 768px) {
+        .main {
+            display: block;
+        }
+        .column {
+            width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+    )
     num_rows = math.ceil((df_pie1Y['symbol'].nunique()) / 4)
     rows = []
     for i in range(num_rows):
