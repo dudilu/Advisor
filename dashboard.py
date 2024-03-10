@@ -372,18 +372,13 @@ for symbol in symbols1Q:
     cols = [col for col in df_change1Q.columns if symbol == col.split('_')[0]]
     df_change1Q[symbol] = df_change1Q[cols].mean(axis=1)
 
-
-
-base_url = "https://github.com/dudilu/Advisor/raw/main/logo/"
+logo_dir = 'https://raw.githubusercontent.com/dudilu/Advisor/main/DASH_canva.png'
 
 logo_paths = {}
 
-# Assuming unique_symbols is defined elsewhere
 for symbol in unique_symbols:
-    image_url = base_url + f"{symbol}_canva.png"
-    logo_paths[symbol] = image_url
-
-
+    background_image_path = os.path.join(logo_dir, f'{symbol}_canva.png')
+    logo_paths[symbol] = background_image_path
 
 performance = pd.read_csv('https://raw.githubusercontent.com/dudilu/Advisor/main/cumulative_values.csv')
 performance.reset_index(inplace=True)
