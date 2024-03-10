@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_option_menu import option_menu
 import yfinance as yf
 import pandas as pd
 from datetime import datetime
@@ -16,7 +17,6 @@ from PIL import Image
 import urllib.request
 import requests
 from io import BytesIO
-from streamlit_option_menu import option_menu
 import plotly.express as px
 import plotly.graph_objects as go
 
