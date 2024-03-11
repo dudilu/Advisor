@@ -19,17 +19,16 @@ from PIL import Image
 import urllib.request
 import requests
 from io import BytesIO
-from screeninfo import get_monitors
+import pyautogui
 
 smtp_server = "smtp.gmail.com"
 smtp_port = 587
 smtp_username = "dudilu86@gmail.com"
 smtp_password = "qhnj pmve zcpv ycds"
 
-def get_screen_width():
-    monitor = get_monitors()[0]
-    width = monitor.width
-    return width
+def get_screen_resolution():
+    screen_width, screen_height = pyautogui.size()
+    return screen_width, screen_height
     
 def display_dudi(url):
     response = requests.get(url)
@@ -260,7 +259,7 @@ def pie_plot(df, container):
         st.plotly_chart(fig)
 ##############################################################################################################################################################################################
 # Data prep
-screen_width = get_screen_width()
+screen_width = get_screen_resolution()
 list_advisor = pd.read_csv('C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\portfolio.csv')
 list_advisor = list_advisor[list_advisor['Active'] == 'active']
 
