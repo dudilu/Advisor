@@ -2,6 +2,9 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 from datetime import datetime
+from streamlit_option_menu import option_menu
+import plotly.express as px
+import plotly.graph_objects as go
 import math
 import os
 import smtplib
@@ -16,14 +19,19 @@ from PIL import Image
 import urllib.request
 import requests
 from io import BytesIO
-import plotly.express as px
-import plotly.graph_objects as go
-from streamlit_option_menu import option_menu
+import tkinter as tk
 
 smtp_server = "smtp.gmail.com"
 smtp_port = 587
 smtp_username = "dudilu86@gmail.com"
 smtp_password = "qhnj pmve zcpv ycds"
+
+def get_screen_resolution():
+    root = tk.Tk()
+    width = root.winfo_screenwidth()
+    height = root.winfo_screenheight()
+    root.destroy()
+    return width, height
 def display_dudi(url):
     response = requests.get(url)
     img = Image.open(BytesIO(response.content))
@@ -174,7 +182,7 @@ def replace_duplicate_headers(header):
     else:
         header_count[header] += 1
         return f"{header}{header_count[header]}"
-def return_plot(df):
+def return_plot(df, container):
     trace_investec = go.Scatter(x=df['Day'], y=df['InvesTec'], mode='lines',
                                 name='Moolah', line=dict(color='green', width=2), opacity=0.75,
                                 hovertemplate='<b>Date:</b> %{x}<br><b>Return:</b> %{y:.1f}%')
@@ -184,13 +192,15 @@ def return_plot(df):
     fig = go.Figure(data=[trace_investec, trace_spy])
 
     fig.update_layout(
+        width=screen_width/2.836,
         hovermode='x',
         showlegend=True,
         yaxis=dict(showgrid=True),
         xaxis=dict(showgrid=False),
         margin=dict(l=0, r=0, t=30, b=0)
     )
-    st.plotly_chart(fig)
+    with container:
+        st.plotly_chart(fig)
 def cumulative_plot(df):
     trace_Me = go.Scatter(x=df['Date'], y=df['cumulative'], mode='lines',
                           name='Moolah', line=dict(color='green', width=3), opacity=0.75,
@@ -227,7 +237,7 @@ def process_dataframe(df):
     df['InvesTec'] = df.drop(['SPY', 'Day'], axis=1).mean(axis=1)
 
     return df
-def pie_plot(df):
+def pie_plot(df, container):
     industry_counts = df.groupby('industry')['symbol'].count().reset_index()
 
     industry_counts.columns = ['Industry', 'Count']
@@ -245,12 +255,14 @@ def pie_plot(df):
     fig.update_traces(hovertemplate='<b>Industry:</b> %{label}<br><b>% of portfolio:</b> %{percent}<br>%{text}',
                       textinfo='percent', textposition='inside')
 
+    fig.update_layout(width=screen_width/2.836)
     fig.update_traces(text=hover_texts)
-
-    st.plotly_chart(fig)
+    with container:
+        st.plotly_chart(fig)
 ##############################################################################################################################################################################################
 # Data prep
-list_advisor = pd.read_csv('https://raw.githubusercontent.com/dudilu/Advisor/main/portfolio.csv')
+screen_width, screen_height = get_screen_resolution()
+list_advisor = pd.read_csv('C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\portfolio.csv')
 list_advisor = list_advisor[list_advisor['Active'] == 'active']
 
 df_pie = list_advisor
@@ -385,17 +397,20 @@ for symbol in unique_symbols:
     background_image_path = f'{logo_dir}/{symbol}_canva.png'
     logo_paths[symbol] = background_image_path
 
-performance = pd.read_csv('https://raw.githubusercontent.com/dudilu/Advisor/main/cumulative_values.csv')
+
+
+
+performance = pd.read_csv('C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\cumulative_values.csv')
 performance.reset_index(inplace=True)
 performance['Date'] = pd.to_datetime(performance['Date'])
 
-backtesting_over_time = pd.read_csv('https://raw.githubusercontent.com/dudilu/Advisor/main/backtesting_over_time.csv')
+backtesting_over_time = pd.read_csv('C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\backtesting_over_time.csv')
 backtesting_over_time['date'] = pd.to_datetime(backtesting_over_time['start'], format='%Y-%m-%d')
 backtesting_over_time['change[%]'] = (backtesting_over_time['change[%]']).round(2).astype(str) + '%'
 
 ##############################################################################################################################################################################################
 # Settings
-st.set_page_config(page_title="Moolah",layout='wide',initial_sidebar_state="auto")
+st.set_page_config(page_title="Moolah",layout='wide',initial_sidebar_state="auto", page_icon='🖖')
 
 with st.sidebar:
     #selected = option_menu("Main Menu", ['Our Strategic', 'Our Portfolio', 'Fundamentals', 'Strategic Performance'], icons=['briefcase', 'star', 'clock', 'question-circle'], menu_icon="cast")
@@ -434,130 +449,176 @@ with st.sidebar:
             st.warning("Please enter your email address.")
 ##############################################################################################################################################################################################
 if selected == "📊 Our Portfolio":
-    col_title, col_metric = st.columns([6, 1])
-    col_explain = st.columns([6, 1])
-    col_return, col_pie = st.columns([1.1, 1])
 
-    col_explain[0].markdown(
-        """
-        <style>
-        body {
-            background-color: #f0f0f0; /* Set your desired background color */
-        }
 
-        .fade-in {
-            animation: fadeIn 4.5s;
-        }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-    st.markdown(
-    """
-    <style>
-    /* Adjust column widths based on screen size */
-    @media (max-width: 768px) {
-        .main {
-            display: block;
-        }
-        .column {
-            width: 100% !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-        }
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-    )
-    num_rows = math.ceil((df_pie1Y['symbol'].nunique()) / 4)
-    rows = []
-    for i in range(num_rows):
-        row = st.columns(4)
-        rows.append(row)
 
-    with col_pie:
+
+
         if selected_tab == "1Q":
-            pie_plot(df_pie1Q)
+            num_rows = math.ceil((df_pie1Q['symbol'].nunique()) / 4)
+            rows_1Q = []
+            for i in range(num_rows + 2):
+                if (i == 0):
+                    row = st.columns(5)
+                    rows_1Q.append(row)
+                if (i == 1):
+                    row = st.columns(2)
+                    rows_1Q.append(row)
+                if (i > 1):
+                    row = st.columns(4)
+                    rows_1Q.append(row)
 
-            with col_return:
-                return_plot(df_change1Q)
+            pie_plot(df_pie1Q, rows_1Q[1][1])
+
+            return_plot(df_change1Q, rows_1Q[1][0])
 
             last_column = df_change1Q.loc[:, 'Day']
-
-            for i in range(num_rows):
+            for i in range(2, num_rows + 2):
                 for j in range(4):
-                    symbol_index = 4 * i + j
+                    symbol_index = 4 * i + j - 8
                     if symbol_index < len(df_symbols1Q):
                         symbol = df_symbols1Q.loc[symbol_index, 'symbol']
                         first_column = df_change1Q.loc[:, symbol]
                         new_df = pd.DataFrame({'date': last_column, 'first': first_column})
                         background_image = logo_paths[symbol]
-                        create_line_chart(rows[i][j], new_df, symbol, background_image=background_image,percentage=new_df['first'].iloc[-1])
+                        create_line_chart(rows_1Q[i][j], new_df, symbol, background_image=background_image,
+                                          percentage=new_df['first'].iloc[-1])
+
+            st.markdown(
+                """
+                <style>
+                    .stPlotlyChart {
+                        border: 1px solid #e2e2e2;
+                        border-radius: 20px;
+                        overflow: hidden;
+                    }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+            rows_1Q[0][0].markdown(
+                """<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",
+                unsafe_allow_html=True)
+
+            percentage = return_period(selected_tab)
+            color = "green" if percentage >= 0 else "red"
+            arrow_icon = "▲" if percentage >= 0 else "▼"
+            rows_1Q[0][4].markdown("""<div style='border: 1px solid #e2e2e2; padding: 15px; border-radius: 800px;'>
+                                <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p></div>""".format(
+                color=color, arrow_icon=arrow_icon, percentage=percentage), unsafe_allow_html=True)
+            # break
 
         elif selected_tab == "0.5Y":
-            pie_plot(df_pie_0_5Y)
-            with col_return:
-                return_plot(df_change0p5Y)
+            num_rows = math.ceil((df_pie_0_5Y['symbol'].nunique()) / 4)
+            rows_0_5Y = []
+            for i in range(num_rows + 2):
+                if (i == 0):
+                    row = st.columns(5)
+                    rows_0_5Y.append(row)
+                if (i == 1):
+                    row = st.columns(2)
+                    rows_0_5Y.append(row)
+                if (i > 1):
+                    row = st.columns(4)
+                    rows_0_5Y.append(row)
+
+            pie_plot(df_pie_0_5Y, rows_0_5Y[1][1])
+
+            return_plot(df_change0p5Y, rows_0_5Y[1][0])
 
             last_column = df_change0p5Y.loc[:, 'Day']
-
-            for i in range(num_rows):
+            for i in range(2, num_rows + 2):
                 for j in range(4):
-                    symbol_index = 4 * i + j
+                    symbol_index = 4 * i + j - 8
                     if symbol_index < len(df_symbols0_5Y):
                         symbol = df_symbols0_5Y.loc[symbol_index, 'symbol']
                         first_column = df_change0p5Y.loc[:, symbol]
                         new_df = pd.DataFrame({'date': last_column, 'first': first_column})
                         background_image = logo_paths[symbol]
-                        create_line_chart(rows[i][j], new_df, symbol, background_image=background_image,percentage=new_df['first'].iloc[-1])
+                        create_line_chart(rows_0_5Y[i][j], new_df, symbol, background_image=background_image,
+                                          percentage=new_df['first'].iloc[-1])
+
+            st.markdown(
+                """
+                <style>
+                    .stPlotlyChart {
+                        border: 1px solid #e2e2e2;
+                        border-radius: 20px;
+                        overflow: hidden;
+                    }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+            rows_0_5Y[0][0].markdown(
+                """<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",
+                unsafe_allow_html=True)
+
+            percentage = return_period(selected_tab)
+            color = "green" if percentage >= 0 else "red"
+            arrow_icon = "▲" if percentage >= 0 else "▼"
+            rows_0_5Y[0][4].markdown("""<div style='border: 1px solid #e2e2e2; padding: 15px; border-radius: 800px;'>
+                                <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p></div>""".format(
+                color=color, arrow_icon=arrow_icon, percentage=percentage), unsafe_allow_html=True)
+            # break
+
+
+
+
+
+
+
 
         elif selected_tab == "1Y":
-            pie_plot(df_pie1Y)
-            with col_return:
-                return_plot(df_change1Y)
+            num_rows = math.ceil((df_pie1Y['symbol'].nunique()) / 4)
+            rows_1Y = []
+            for i in range(num_rows + 2):
+                if (i == 0):
+                    row = st.columns(5)
+                    rows_1Y.append(row)
+                if (i == 1):
+                    row = st.columns(2)
+                    rows_1Y.append(row)
+                if (i > 1):
+                    row = st.columns(4)
+                    rows_1Y.append(row)
+
+            pie_plot(df_pie1Y, rows_1Y[1][1])
+
+            return_plot(df_change1Y,rows_1Y[1][0])
 
             last_column = df_change1Y.loc[:, 'Day']
-            for i in range(num_rows):
+            for i in range(2, num_rows + 2):
                 for j in range(4):
-                    symbol_index = 4 * i + j
+                    symbol_index = 4 * i + j - 8
                     if symbol_index < len(df_symbols1Y):
                         symbol = df_symbols1Y.loc[symbol_index, 'symbol']
                         first_column = df_change1Y.loc[:, symbol]
                         new_df = pd.DataFrame({'date': last_column, 'first': first_column})
                         background_image = logo_paths[symbol]
-                        create_line_chart(rows[i][j], new_df, symbol, background_image=background_image, percentage=new_df['first'].iloc[-1])
+                        create_line_chart(rows_1Y[i][j], new_df, symbol, background_image=background_image, percentage=new_df['first'].iloc[-1])
 
-    st.markdown(
-        """
-        <style>
-            .stPlotlyChart {
-                border: 1px solid #e2e2e2;
-                border-radius: 20px;
-                overflow: hidden;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-    col_title.markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",unsafe_allow_html=True)
+            st.markdown(
+                """
+                <style>
+                    .stPlotlyChart {
+                        border: 1px solid #e2e2e2;
+                        border-radius: 20px;
+                        overflow: hidden;
+                    }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+            rows_1Y[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",unsafe_allow_html=True)
 
-    percentage = return_period(selected_tab)
-    color = "green" if percentage >= 0 else "red"
-    arrow_icon = "▲" if percentage >= 0 else "▼"
-    col_metric.markdown("""<div style='border: 1px solid #e2e2e2; padding: 15px; border-radius: 800px;'>
-            <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p></div>""".format(color=color, arrow_icon=arrow_icon, percentage=percentage),unsafe_allow_html=True)
+            percentage = return_period(selected_tab)
+            color = "green" if percentage >= 0 else "red"
+            arrow_icon = "▲" if percentage >= 0 else "▼"
+            rows_1Y[0][4].markdown("""<div style='border: 1px solid #e2e2e2; padding: 15px; border-radius: 800px;'>
+                    <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p></div>""".format(color=color, arrow_icon=arrow_icon, percentage=percentage),unsafe_allow_html=True)
+            # break
 ##############################################################################################################################################################################################
 elif selected == "🚀 Strategic Performance":
     col_title, col_metric = st.columns([6, 1])
@@ -645,7 +706,7 @@ elif selected == "📈 Fundamentals":
     col_explain = st.columns(1)
     col_why = st.columns([1])
 
-    why = pd.read_csv('https://raw.githubusercontent.com/dudilu/Advisor/main/WHY.csv')
+    why = pd.read_csv('C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\WHY.csv')
 
     c1, c2, c3, c4 = [why.groupby('symbol')[col].agg(list).reset_index() for col in [
         'Property, Plant, And Equipment_4',
