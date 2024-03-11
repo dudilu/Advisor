@@ -19,19 +19,18 @@ from PIL import Image
 import urllib.request
 import requests
 from io import BytesIO
-import tkinter as tk
+from screeninfo import get_monitors
 
 smtp_server = "smtp.gmail.com"
 smtp_port = 587
 smtp_username = "dudilu86@gmail.com"
 smtp_password = "qhnj pmve zcpv ycds"
 
-def get_screen_resolution():
-    root = tk.Tk()
-    width = root.winfo_screenwidth()
-    height = root.winfo_screenheight()
-    root.destroy()
-    return width, height
+def get_screen_width():
+    monitor = get_monitors()[0]
+    width = monitor.width
+    return width
+    
 def display_dudi(url):
     response = requests.get(url)
     img = Image.open(BytesIO(response.content))
@@ -261,7 +260,7 @@ def pie_plot(df, container):
         st.plotly_chart(fig)
 ##############################################################################################################################################################################################
 # Data prep
-screen_width, screen_height = get_screen_resolution()
+screen_width = get_screen_width()
 list_advisor = pd.read_csv('C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\portfolio.csv')
 list_advisor = list_advisor[list_advisor['Active'] == 'active']
 
