@@ -19,17 +19,12 @@ from PIL import Image
 import urllib.request
 import requests
 from io import BytesIO
-import pyautogui
 
 smtp_server = "smtp.gmail.com"
 smtp_port = 587
 smtp_username = "dudilu86@gmail.com"
 smtp_password = "qhnj pmve zcpv ycds"
 
-def get_screen_resolution():
-    screen_width, screen_height = pyautogui.size()
-    return screen_width, screen_height
-    
 def display_dudi(url):
     response = requests.get(url)
     img = Image.open(BytesIO(response.content))
@@ -190,7 +185,6 @@ def return_plot(df, container):
     fig = go.Figure(data=[trace_investec, trace_spy])
 
     fig.update_layout(
-        width=screen_width/2.836,
         hovermode='x',
         showlegend=True,
         yaxis=dict(showgrid=True),
@@ -198,7 +192,7 @@ def return_plot(df, container):
         margin=dict(l=0, r=0, t=30, b=0)
     )
     with container:
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, use_container_width=True)
 def cumulative_plot(df):
     trace_Me = go.Scatter(x=df['Date'], y=df['cumulative'], mode='lines',
                           name='Moolah', line=dict(color='green', width=3), opacity=0.75,
@@ -215,11 +209,11 @@ def cumulative_plot(df):
         #yaxis=dict(showgrid=True),
         yaxis=dict(showgrid=True, type='log'),  # Set y-axis to log scale
         xaxis=dict(showgrid=False),
-        margin=dict(l=0, r=0, t=30, b=0),
-        height = 450,
+        margin=dict(l=0, r=0, t=60, b=60),
+        height = 500,
         title_font=dict(size=22)
     )
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, use_container_width=True)
 def process_dataframe(df):
     df['number of nan'] = df.shape[1] - df.isnull().sum(axis=1) - 2
     df = df[df['number of nan'] > 5]
@@ -253,13 +247,11 @@ def pie_plot(df, container):
     fig.update_traces(hovertemplate='<b>Industry:</b> %{label}<br><b>% of portfolio:</b> %{percent}<br>%{text}',
                       textinfo='percent', textposition='inside')
 
-    fig.update_layout(width=screen_width/2.836)
     fig.update_traces(text=hover_texts)
     with container:
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, use_container_width=True)
 ##############################################################################################################################################################################################
 # Data prep
-screen_width = get_screen_resolution()
 list_advisor = pd.read_csv('C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\portfolio.csv')
 list_advisor = list_advisor[list_advisor['Active'] == 'active']
 
@@ -395,9 +387,6 @@ for symbol in unique_symbols:
     background_image_path = f'{logo_dir}/{symbol}_canva.png'
     logo_paths[symbol] = background_image_path
 
-
-
-
 performance = pd.read_csv('C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\cumulative_values.csv')
 performance.reset_index(inplace=True)
 performance['Date'] = pd.to_datetime(performance['Date'])
@@ -413,30 +402,13 @@ st.set_page_config(page_title="Moolah",layout='wide',initial_sidebar_state="auto
 with st.sidebar:
     #selected = option_menu("Main Menu", ['Our Strategic', 'Our Portfolio', 'Fundamentals', 'Strategic Performance'], icons=['briefcase', 'star', 'clock', 'question-circle'], menu_icon="cast")
     selected = option_menu("Main Menu", ['🎯 Our Strategic', '📊 Our Portfolio', '📈 Fundamentals', '🚀 Strategic Performance', '🕵️‍♂️ About'], menu_icon="cast")
-    num_empty_spaces_default = 10
 
     if selected == "📊 Our Portfolio":
         selected_tab = st.selectbox("Select a Period", ["1Y", "0.5Y", "1Q"])
-        num_empty_spaces = 20
-
-    elif selected == "📈 Fundamentals":
-        num_empty_spaces = 22
 
     elif selected == "🚀 Strategic Performance":
         start_date = pd.Timestamp(st.sidebar.date_input("Start date", min_value=performance['Date'].min(),max_value=performance['Date'].max(),value=performance['Date'].min()))
         end_date = pd.Timestamp(st.sidebar.date_input("End date", min_value=performance['Date'].min(),max_value=performance['Date'].max(),value=performance['Date'].max()))
-        num_empty_spaces = 15
-
-    elif selected == "🎯 Our Strategic":
-        num_empty_spaces = 25
-    elif selected == "🕵️‍♂️ About":
-        num_empty_spaces = 25
-
-    else:
-        num_empty_spaces = num_empty_spaces_default
-
-    for _ in range(num_empty_spaces):
-        st.write("")
 
     user_email = st.text_input("**Stay on top of your investments! Sign up for our stock alerts.**")
     if st.button("Submit"):
@@ -447,11 +419,6 @@ with st.sidebar:
             st.warning("Please enter your email address.")
 ##############################################################################################################################################################################################
 if selected == "📊 Our Portfolio":
-
-
-
-
-
 
         if selected_tab == "1Q":
             num_rows = math.ceil((df_pie1Q['symbol'].nunique()) / 4)
@@ -480,8 +447,7 @@ if selected == "📊 Our Portfolio":
                         first_column = df_change1Q.loc[:, symbol]
                         new_df = pd.DataFrame({'date': last_column, 'first': first_column})
                         background_image = logo_paths[symbol]
-                        create_line_chart(rows_1Q[i][j], new_df, symbol, background_image=background_image,
-                                          percentage=new_df['first'].iloc[-1])
+                        create_line_chart(rows_1Q[i][j], new_df, symbol, background_image=background_image, percentage=new_df['first'].iloc[-1])
 
             st.markdown(
                 """
@@ -495,17 +461,19 @@ if selected == "📊 Our Portfolio":
                 """,
                 unsafe_allow_html=True
             )
-            rows_1Q[0][0].markdown(
-                """<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",
-                unsafe_allow_html=True)
+            with rows_1Q[0][0]:
+                rows_1Q[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",unsafe_allow_html=True)
+                rows_1Q[0][0].markdown("""<h1> </h1>""",unsafe_allow_html=True)
 
             percentage = return_period(selected_tab)
             color = "green" if percentage >= 0 else "red"
             arrow_icon = "▲" if percentage >= 0 else "▼"
-            rows_1Q[0][4].markdown("""<div style='border: 1px solid #e2e2e2; padding: 15px; border-radius: 800px;'>
-                                <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p></div>""".format(
-                color=color, arrow_icon=arrow_icon, percentage=percentage), unsafe_allow_html=True)
-            # break
+
+            with rows_1Q[0][4]:
+                rows_1Q[0][4].markdown("""
+                <div style='border: 1px solid #e2e2e2; padding: 3px; border-radius: 800px; text-align: center;'>
+                    <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p>
+                </div> """.format(color=color, arrow_icon=arrow_icon, percentage=percentage), unsafe_allow_html=True)
 
         elif selected_tab == "0.5Y":
             num_rows = math.ceil((df_pie_0_5Y['symbol'].nunique()) / 4)
@@ -549,24 +517,20 @@ if selected == "📊 Our Portfolio":
                 """,
                 unsafe_allow_html=True
             )
-            rows_0_5Y[0][0].markdown(
-                """<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",
-                unsafe_allow_html=True)
+
+            with rows_0_5Y[0][0]:
+                rows_0_5Y[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",unsafe_allow_html=True)
+                rows_0_5Y[0][0].markdown("""<h1> </h1>""",unsafe_allow_html=True)
 
             percentage = return_period(selected_tab)
             color = "green" if percentage >= 0 else "red"
             arrow_icon = "▲" if percentage >= 0 else "▼"
-            rows_0_5Y[0][4].markdown("""<div style='border: 1px solid #e2e2e2; padding: 15px; border-radius: 800px;'>
-                                <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p></div>""".format(
-                color=color, arrow_icon=arrow_icon, percentage=percentage), unsafe_allow_html=True)
-            # break
 
-
-
-
-
-
-
+            with rows_0_5Y[0][4]:
+                rows_0_5Y[0][4].markdown("""
+                <div style='border: 1px solid #e2e2e2; padding: 3px; border-radius: 800px; text-align: center;'>
+                    <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p>
+                </div> """.format(color=color, arrow_icon=arrow_icon, percentage=percentage), unsafe_allow_html=True)
 
         elif selected_tab == "1Y":
             num_rows = math.ceil((df_pie1Y['symbol'].nunique()) / 4)
@@ -609,40 +573,43 @@ if selected == "📊 Our Portfolio":
                 """,
                 unsafe_allow_html=True
             )
-            rows_1Y[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",unsafe_allow_html=True)
+
+            with rows_1Y[0][0]:
+                rows_1Y[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",unsafe_allow_html=True)
+                rows_1Y[0][0].markdown("""<h1> </h1>""",unsafe_allow_html=True)
 
             percentage = return_period(selected_tab)
             color = "green" if percentage >= 0 else "red"
             arrow_icon = "▲" if percentage >= 0 else "▼"
-            rows_1Y[0][4].markdown("""<div style='border: 1px solid #e2e2e2; padding: 15px; border-radius: 800px;'>
-                    <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p></div>""".format(color=color, arrow_icon=arrow_icon, percentage=percentage),unsafe_allow_html=True)
-            # break
+
+            with rows_1Y[0][4]:
+                rows_1Y[0][4].markdown("""
+                <div style='border: 1px solid #e2e2e2; padding: 3px; border-radius: 800px; text-align: center;'>
+                    <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p>
+                </div> """.format(color=color, arrow_icon=arrow_icon, percentage=percentage), unsafe_allow_html=True)
 ##############################################################################################################################################################################################
 elif selected == "🚀 Strategic Performance":
-    col_title, col_metric = st.columns([6, 1])
-    col_explain = st.columns(1)
-    col_performance, col_bar_chart = st.columns([1.1, 1])
-    col_backtesting_over_time = st.columns([1])
+    rows = [st.columns(4), st.columns(1), st.columns(2), st.columns(1)]
 
-    col_title.markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Strategic Performance - Backtesting</h1>""",unsafe_allow_html=True)
-    with col_explain[0]:
+    with rows[0][0]:
+        rows[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Strategic Performance</h1>""",unsafe_allow_html=True)
+
+    with rows[1][0]:
         st.markdown("<h2 style='color:#74B6FF;'>What is Backtesting</h2>", unsafe_allow_html=True)
         st.write("Backtesting is a simulation technique used to evaluate a trading strategy using historical data.")
         st.write("Essentially, it allows traders and investors to test how a particular strategy would have performed if it had been used during a specific period in the past.")
-
         st.markdown("<h2 style='color:#74B6FF;'>Why is Backtesting Important for Trading</h2>", unsafe_allow_html=True)
-
         st.write("**1. Validating Strategy Performance:**")
         st.write("   Backtesting allows traders to validate their trading strategies by objectively testing them against historical data. ")
         st.write("This helps in understanding if the strategy is robust and capable of generating profits.")
-
         st.write("**2. Building Confidence:**")
         st.write("   Successful backtesting results can provide traders with confidence in their strategies. ")
         st.write("It offers a level of assurance that the chosen approach has the potential to generate profits based on historical performance.")
-
         st.write("**3. Comparing Strategies:**")
         st.write("   Traders can compare multiple strategies using backtesting to determine which ones are more effective. ")
         st.write("This allows for data-driven decision-making in strategy selection.")
+        st.write("")
+        st.write("")
 
     performance = performance[(performance['Date'] >= start_date) & (performance['Date'] <= end_date)]
     backtesting_over_time = backtesting_over_time[(backtesting_over_time['date'] >= start_date) & (backtesting_over_time['date'] <= end_date)]
@@ -657,10 +624,12 @@ elif selected == "🚀 Strategic Performance":
     df_cagr['Moolah'] = df_cagr['Moolah']/100
     df_cagr['SPY'] = df_cagr['SPY']/100
 
-    with col_performance:
+    with rows[2][0]:
         cumulative_plot(performance)
 
-    with col_bar_chart:
+
+
+    with rows[2][1]:
         fig = px.bar(df_cagr, x='Year', y=['Moolah', 'SPY'],
                      title='Compound Annual Growth Rate per Year',
                      barmode='group',
@@ -672,15 +641,27 @@ elif selected == "🚀 Strategic Performance":
         fig.update_yaxes(automargin=True, title=None, tickformat='.2%')
         fig.update_layout(hovermode='x unified')
 
-        # Remove the word "variable" from legend labels
         fig.update_layout(legend_title_text='', legend=dict(itemsizing='constant'))
 
         fig.update_traces(hovertemplate='%{y:.2f}')
 
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown(
+        """
+        <style>
+            .stPlotlyChart {
+                border: 1px solid #e2e2e2;
+                border-radius: 20px;
+                overflow: hidden;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
     backtesting_over_time = backtesting_over_time.drop(columns=['index','date'])
-    with col_backtesting_over_time[0]:
+    with rows[3][0]:
         st.data_editor(
             backtesting_over_time,
             column_config={
@@ -689,20 +670,21 @@ elif selected == "🚀 Strategic Performance":
                 "change[%]": "Return",
                 "value_list": st.column_config.LineChartColumn("Price"),
             },
-            hide_index=True,
-            width=1250,
+            hide_index=True, use_container_width=True
         )
 
     percentage = calculate_cagr(performance,'cumulative')
     color = "green" if percentage >= 0 else "red"
     arrow_icon = "▲" if percentage >= 0 else "▼"
-    col_metric.markdown("""<div style='border: 1px solid #e2e2e2; padding: 15px; border-radius: 800px;'>
-            <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p></div>""".format(color=color, arrow_icon=arrow_icon, percentage=percentage),unsafe_allow_html=True)
+
+    with rows[0][3]:
+        rows[0][3].markdown("""
+        <div style='border: 1px solid #e2e2e2; padding: 3px; border-radius: 800px; text-align: center;'>
+            <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p>
+        </div> """.format(color=color, arrow_icon=arrow_icon, percentage=percentage), unsafe_allow_html=True)
 ##############################################################################################################################################################################################
 elif selected == "📈 Fundamentals":
-    col_title, col_metric = st.columns([6, 1])
-    col_explain = st.columns(1)
-    col_why = st.columns([1])
+    rows = [st.columns(1),st.columns(1),st.columns(1)]
 
     why = pd.read_csv('C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\WHY.csv')
 
@@ -722,41 +704,34 @@ elif selected == "📈 Fundamentals":
         .merge(c3, on='symbol', how='outer') \
         .merge(c4, on='symbol', how='outer')
 
-    merged_df.columns = ['symbol', 'Property, Plant, And Equipment_4',
-                         'Research And Development Expenses', 'Stock Based Compensation',
-                         'Total Non Cash Items']
+    merged_df.columns = ['symbol', 'Property, Plant, And Equipment_4','Research And Development Expenses', 'Stock Based Compensation','Total Non Cash Items']
 
-    col_title.markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Fundamentals</h1>""",unsafe_allow_html=True)
+    with rows[0][0]:
+        rows[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Fundamentals</h1>""",unsafe_allow_html=True)
 
-    with col_explain[0]:
+    with rows[1][0]:
         st.markdown("<h3 style='color:#74B6FF;'>Key Finance Indicators for Backtesting Trading Strategies</h3>", unsafe_allow_html=True)
-
         st.write("The finance indicators below play crucial roles in backtesting trading strategies and assessing companies future potential.")
-
         st.markdown("<h5 style='color:#74B6FF;'>1. Property, Plant, and Equipment</h5>", unsafe_allow_html=True)
-
         st.write("Property, Plant, and Equipment (PP&E) refers to the long-term tangible assets that a company uses in its operations to generate revenue. ")
         st.write("These can include buildings, machinery, equipment, vehicles, and land.")
         st.write("A rising trend in PP&E could suggest that the company is investing in its future, potentially leading to increased production capacity, efficiency, and competitiveness.")
-
         st.markdown("<h5 style='color:#74B6FF;'>2. Research and Development Expenses (R&D)</h5>", unsafe_allow_html=True)
         st.write("Research and Development Expenses (R&D) refer to the costs incurred by a company to develop new products, services, or technologies. ")
         st.write("These expenses are aimed at improving existing products or creating new ones.")
         st.write("Increasing R&D expenses might suggest potential for future revenue growth from new products or improved offerings.")
-
         st.markdown("<h5 style='color:#74B6FF;'>3. Stock-Based Compensation</h5>", unsafe_allow_html=True)
-
         st.write("Stock-Based Compensation refers to the issuance of company stock or stock options to employees as part of their compensation package. ")
         st.write("This can include stock options, restricted stock units (RSUs), or other equity-based incentives.")
         st.write("Increasing stock-based compensation could suggest confidence in the company's future stock performance.")
-
         st.markdown("<h5 style='color:#74B6FF;'>4. Total Non-Cash Items</h5>", unsafe_allow_html=True)
-
         st.write("Total Non-Cash Items refer to all non-cash transactions that impact a company's financial statements. ")
         st.write("This can include items such as depreciation, amortization, stock-based compensation, and other non-cash expenses or gains.")
         st.write("Higher total non-cash items might indicate a company's ability to manage expenses efficiently without affecting its cash position.")
+        st.write("")
+        st.write("")
 
-    with col_why[0]:
+    with rows[2][0]:
         st.data_editor(
             merged_df,
             column_config={
@@ -770,50 +745,41 @@ elif selected == "📈 Fundamentals":
         )
 ##############################################################################################################################################################################################
 elif selected == "🎯 Our Strategic":
-    col_title = st.columns(1)
-    col_explain, col_img = st.columns([2, 2])
-    #col_img = st.columns(2)
+    rows = [st.columns(1),st.columns(2),st.columns(2)]
 
-    col_title[0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Strategic</h1>""",unsafe_allow_html=True)
+    with rows[0][0]:
+        rows[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Strategic</h1>""",unsafe_allow_html=True)
 
-
-
-    with col_explain:
+    with rows[1][0]:
         st.markdown("<h2 style='color:#74B6FF;'>How Our Algorithm Identifies Winning Stocks</h2>", unsafe_allow_html=True)
-
         st.write("Our algorithm is designed to pinpoint stocks in the introduction stage of the product life cycle. "
                  "By analyzing company data and trends, we can identify emerging products with huge growth potential.")
-
         st.markdown("<h2 style='color:#74B6FF;'>Maximizing Growth Stage Profits</h2>", unsafe_allow_html=True)
-
         st.write("Once a stock is identified in the introduction stage, we ride the wave of growth. "
                  "Our algorithm ensures that we take full of the growth period, maximizing profits.")
-
         st.markdown("<h2 style='color:#74B6FF;'>Why It Works</h2>", unsafe_allow_html=True)
-
         st.write("Cutting-edge technology analyzes market signals to spot products on the cusp of explosive growth. "
                  "By getting in early, we reap the rewards as the product gains popularity. "
                  "Our track record speaks for itself.")
-
         st.write("Join Us in Profiting from Innovation.")
-
         st.write("Don't miss out on the opportunity to invest in the next big thing. "
                  "Our algorithm does the lifting, so you can enjoy the profits. "
                  "Invest confidently, knowing you're ahead of the curve with our proven approach. Start Investing Wisely Today.")
-
         st.write(
             "Discover how our algorithm can help you identify stocks in the introduction stage for maximum growth. "
             "Let's embark on a profitable journey together.")
 
-    with col_img:
+    with rows[1][1]:
         display_image('https://github.com/dudilu/Advisor/raw/main/cash%20cow1.jpg')
-
+##############################################################################################################################################################################################
 elif selected == "🕵️‍♂️ About":
-    col_title = st.columns(1)
-    col_title[0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Hello !</h1>""",unsafe_allow_html=True)
-    col_explain, col_img = st.columns([2, 2])
+    rows = [st.columns(1),st.columns(2)]
+    with rows[0][0]:
+        rows[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Hello !</h1>""",unsafe_allow_html=True)
+        rows[0][0].markdown("")
+        rows[0][0].markdown("")
 
-    with col_explain:
+    with rows[1][0]:
         st.write("I'm Dudi")
         st.write("")
         st.write("With a background in electrical engineering and a specialization in data science, I've always been fascinated by the power of algorithms to make sense of complex data.")
@@ -828,10 +794,7 @@ elif selected == "🕵️‍♂️ About":
         st.write("Thank you for choosing Moolah,")
         st.write("")
         st.write("Dudi")
-    with col_img:
+    with rows[1][1]:
         display_dudi('https://raw.githubusercontent.com/dudilu/Advisor/main/Dudi.jpg')
 
-
-# url = 'https://raw.githubusercontent.com/dudilu/Advisor/main/list_advisor.csv'
-# df = pd.read_csv(url)
 #set_background('C:/Users/DudiLubton/PycharmProjects/pythonProject/Advisor/logo/plc.png')
