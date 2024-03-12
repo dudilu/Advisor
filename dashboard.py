@@ -391,7 +391,7 @@ performance = pd.read_csv('https://raw.githubusercontent.com/dudilu/Advisor/main
 performance.reset_index(inplace=True)
 performance['Date'] = pd.to_datetime(performance['Date'])
 
-backtesting_over_time = pd.read_csv('C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\backtesting_over_time.csv')
+backtesting_over_time = pd.read_csv('https://raw.githubusercontent.com/dudilu/Advisor/main/backtesting_over_time.csv')
 backtesting_over_time['date'] = pd.to_datetime(backtesting_over_time['start'], format='%Y-%m-%d')
 backtesting_over_time['change[%]'] = (backtesting_over_time['change[%]']).round(2).astype(str) + '%'
 
