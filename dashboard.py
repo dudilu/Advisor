@@ -387,7 +387,7 @@ for symbol in unique_symbols:
     background_image_path = f'{logo_dir}/{symbol}_canva.png'
     logo_paths[symbol] = background_image_path
 
-performance = pd.read_csv('C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\cumulative_values.csv')
+performance = pd.read_csv('https://raw.githubusercontent.com/dudilu/Advisor/main/cumulative_values.csv')
 performance.reset_index(inplace=True)
 performance['Date'] = pd.to_datetime(performance['Date'])
 
