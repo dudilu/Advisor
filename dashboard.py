@@ -252,7 +252,7 @@ def pie_plot(df, container):
         st.plotly_chart(fig, use_container_width=True)
 ##############################################################################################################################################################################################
 # Data prep
-list_advisor = pd.read_csv('C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\portfolio.csv')
+list_advisor = pd.read_csv('https://raw.githubusercontent.com/dudilu/Advisor/main/list_advisor.csv')
 list_advisor = list_advisor[list_advisor['Active'] == 'active']
 
 df_pie = list_advisor
