@@ -686,7 +686,7 @@ elif selected == "🚀 Strategic Performance":
 elif selected == "📈 Fundamentals":
     rows = [st.columns(1),st.columns(1),st.columns(1)]
 
-    why = pd.read_csv('C:\\Users\\DudiLubton\\PycharmProjects\\pythonProject\\advisor\\WHY.csv')
+    why = pd.read_csv('https://raw.githubusercontent.com/dudilu/Advisor/main/WHY.csv')
 
     c1, c2, c3, c4 = [why.groupby('symbol')[col].agg(list).reset_index() for col in [
         'Property, Plant, And Equipment_4',
