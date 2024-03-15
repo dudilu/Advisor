@@ -82,7 +82,7 @@ def is_valid_email(email):
     # Regular expression for basic email validation
     pattern = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
     return re.match(pattern, email)
-def send_email(receiver_email, subject, content):
+def send_email(receiver_email, subject, content1, content2, content3, content4):
     sender_email = smtp_username
     password = smtp_password
 
@@ -100,7 +100,10 @@ def send_email(receiver_email, subject, content):
     <html>
     <body>
         <h2>{subject}</h2>
-        <p>{content}</p>
+        <p>{content1}</p>
+        <p>{content2}</p>
+        <p>{content3}</p>
+        <p>{content4}</p>
     </body>
     </html>
     """
@@ -184,12 +187,41 @@ def return_plot(df, container):
                            hovertemplate='<b>Date:</b> %{x}<br><b>Return:</b> %{y:.1f}%')
     fig = go.Figure(data=[trace_investec, trace_spy])
 
+    fig.add_annotation(
+        x=1.075,
+        y=1.03 * df['InvesTec'].iloc[-1],
+        xref='paper',
+        yref='y',
+        text=f'{df["InvesTec"].iloc[-1]:.2f}%',
+        showarrow=False,
+        font=dict(color='green'),
+        bordercolor='gray',
+        borderwidth=1,
+        borderpad=1,
+        bgcolor='yellow'
+    )
+
+    fig.add_annotation(
+        x=1.075,
+        y=1.03 * df['SPY'].iloc[-1],
+        xref='paper',
+        yref='y',
+        text=f'{df["SPY"].iloc[-1]:.2f}%',
+        showarrow=False,
+        font=dict(color='red'),
+        bordercolor='gray',
+        borderwidth=1,
+        borderpad=1,
+        bgcolor='yellow'
+    )
+
     fig.update_layout(
         hovermode='x',
         showlegend=True,
         yaxis=dict(showgrid=True),
         xaxis=dict(showgrid=False),
-        margin=dict(l=0, r=0, t=30, b=0)
+        margin=dict(l=0, r=0, t=30, b=0),
+        legend=dict(x=1, y=0, traceorder='normal', orientation='v')
     )
     with container:
         st.plotly_chart(fig, use_container_width=True)
@@ -397,7 +429,7 @@ backtesting_over_time['change[%]'] = (backtesting_over_time['change[%]']).round(
 
 ##############################################################################################################################################################################################
 # Settings
-st.set_page_config(page_title="Moolah",layout='wide',initial_sidebar_state="auto", page_icon='🖖')
+st.set_page_config(page_title="Moo-lah!",layout='wide',initial_sidebar_state="auto", page_icon='🐄')
 
 with st.sidebar:
     #selected = option_menu("Main Menu", ['Our Strategic', 'Our Portfolio', 'Fundamentals', 'Strategic Performance'], icons=['briefcase', 'star', 'clock', 'question-circle'], menu_icon="cast")
@@ -413,8 +445,8 @@ with st.sidebar:
     user_email = st.text_input("**Stay on top of your investments! Sign up for our stock alerts.**")
     if st.button("Submit"):
         if user_email:
-            send_email("dudilu86@gmail.com", "User Details", f"User Email: {user_email}")
-            send_email(user_email, "Hello", "world")
+            send_email("dudilu86@gmail.com", "User Details", f"User Email: {user_email}", "Content 2","Content 3", "Content 4")
+            send_email(user_email, "Welcome, Trailblazers! 🌟", "Meet our profit rockstars, the cash cows,","Our algorithm? A cool crystal ball,","Surf growth waves like pros, join our vibe,","Plus, dairy cow updates in our witty tribe! 🐄")
         else:
             st.warning("Please enter your email address.")
 ##############################################################################################################################################################################################
@@ -423,31 +455,35 @@ if selected == "📊 Our Portfolio":
         if selected_tab == "1Q":
             num_rows = math.ceil((df_pie1Q['symbol'].nunique()) / 4)
             rows_1Q = []
-            for i in range(num_rows + 2):
+            for i in range(num_rows + 3):
                 if (i == 0):
                     row = st.columns(5)
                     rows_1Q.append(row)
                 if (i == 1):
+                    row = st.columns(1)
+                    rows_1Q.append(row)
+                if (i == 2):
                     row = st.columns(2)
                     rows_1Q.append(row)
-                if (i > 1):
+                if (i > 2):
                     row = st.columns(4)
                     rows_1Q.append(row)
 
-            pie_plot(df_pie1Q, rows_1Q[1][1])
+            pie_plot(df_pie1Q, rows_1Q[2][1])
 
-            return_plot(df_change1Q, rows_1Q[1][0])
+            return_plot(df_change1Q, rows_1Q[2][0])
 
             last_column = df_change1Q.loc[:, 'Day']
-            for i in range(2, num_rows + 2):
+            for i in range(3, num_rows + 3):
                 for j in range(4):
-                    symbol_index = 4 * i + j - 8
+                    symbol_index = 4 * i + j - 12
                     if symbol_index < len(df_symbols1Q):
                         symbol = df_symbols1Q.loc[symbol_index, 'symbol']
                         first_column = df_change1Q.loc[:, symbol]
                         new_df = pd.DataFrame({'date': last_column, 'first': first_column})
                         background_image = logo_paths[symbol]
-                        create_line_chart(rows_1Q[i][j], new_df, symbol, background_image=background_image, percentage=new_df['first'].iloc[-1])
+                        create_line_chart(rows_1Q[i][j], new_df, symbol, background_image=background_image,
+                                          percentage=new_df['first'].iloc[-1])
 
             st.markdown(
                 """
@@ -461,9 +497,16 @@ if selected == "📊 Our Portfolio":
                 """,
                 unsafe_allow_html=True
             )
+            with rows_1Q[1][0]:
+                st.write("**Welcome to our eclectic collection of investment gems!**")
+                st.write(
+                    "**Each pick is hand-curated with love and a sprinkle of flair, ensuring your portfolio is as cool as a vintage vinyl record.**")
+
             with rows_1Q[0][0]:
-                rows_1Q[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",unsafe_allow_html=True)
-                rows_1Q[0][0].markdown("""<h1> </h1>""",unsafe_allow_html=True)
+                rows_1Q[0][0].markdown(
+                    """<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",
+                    unsafe_allow_html=True)
+                rows_1Q[0][0].markdown("""<h1> </h1>""", unsafe_allow_html=True)
 
             percentage = return_period(selected_tab)
             color = "green" if percentage >= 0 else "red"
@@ -471,32 +514,36 @@ if selected == "📊 Our Portfolio":
 
             with rows_1Q[0][4]:
                 rows_1Q[0][4].markdown("""
-                <div style='border: 1px solid #e2e2e2; padding: 3px; border-radius: 800px; text-align: center;'>
-                    <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p>
-                </div> """.format(color=color, arrow_icon=arrow_icon, percentage=percentage), unsafe_allow_html=True)
+                            <div style='border: 1px solid #e2e2e2; padding: 3px; border-radius: 800px; text-align: center;'>
+                                <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p>
+                            </div> """.format(color=color, arrow_icon=arrow_icon, percentage=percentage),
+                                       unsafe_allow_html=True)
 
         elif selected_tab == "0.5Y":
             num_rows = math.ceil((df_pie_0_5Y['symbol'].nunique()) / 4)
             rows_0_5Y = []
-            for i in range(num_rows + 2):
+            for i in range(num_rows + 3):
                 if (i == 0):
                     row = st.columns(5)
                     rows_0_5Y.append(row)
                 if (i == 1):
+                    row = st.columns(1)
+                    rows_0_5Y.append(row)
+                if (i == 2):
                     row = st.columns(2)
                     rows_0_5Y.append(row)
-                if (i > 1):
+                if (i > 2):
                     row = st.columns(4)
                     rows_0_5Y.append(row)
 
-            pie_plot(df_pie_0_5Y, rows_0_5Y[1][1])
+            pie_plot(df_pie_0_5Y, rows_0_5Y[2][1])
 
-            return_plot(df_change0p5Y, rows_0_5Y[1][0])
+            return_plot(df_change0p5Y, rows_0_5Y[2][0])
 
             last_column = df_change0p5Y.loc[:, 'Day']
-            for i in range(2, num_rows + 2):
+            for i in range(3, num_rows + 3):
                 for j in range(4):
-                    symbol_index = 4 * i + j - 8
+                    symbol_index = 4 * i + j - 12
                     if symbol_index < len(df_symbols0_5Y):
                         symbol = df_symbols0_5Y.loc[symbol_index, 'symbol']
                         first_column = df_change0p5Y.loc[:, symbol]
@@ -517,10 +564,16 @@ if selected == "📊 Our Portfolio":
                 """,
                 unsafe_allow_html=True
             )
+            with rows_0_5Y[1][0]:
+                st.write("**Welcome to our eclectic collection of investment gems!**")
+                st.write(
+                    "**Each pick is hand-curated with love and a sprinkle of flair, ensuring your portfolio is as cool as a vintage vinyl record.**")
 
             with rows_0_5Y[0][0]:
-                rows_0_5Y[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",unsafe_allow_html=True)
-                rows_0_5Y[0][0].markdown("""<h1> </h1>""",unsafe_allow_html=True)
+                rows_0_5Y[0][0].markdown(
+                    """<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",
+                    unsafe_allow_html=True)
+                rows_0_5Y[0][0].markdown("""<h1> </h1>""", unsafe_allow_html=True)
 
             percentage = return_period(selected_tab)
             color = "green" if percentage >= 0 else "red"
@@ -528,32 +581,36 @@ if selected == "📊 Our Portfolio":
 
             with rows_0_5Y[0][4]:
                 rows_0_5Y[0][4].markdown("""
-                <div style='border: 1px solid #e2e2e2; padding: 3px; border-radius: 800px; text-align: center;'>
-                    <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p>
-                </div> """.format(color=color, arrow_icon=arrow_icon, percentage=percentage), unsafe_allow_html=True)
+                            <div style='border: 1px solid #e2e2e2; padding: 3px; border-radius: 800px; text-align: center;'>
+                                <p><span style='color: {color}; font-size: 36px;'>{arrow_icon} {percentage:.2f}%</span></p>
+                            </div> """.format(color=color, arrow_icon=arrow_icon, percentage=percentage),
+                                       unsafe_allow_html=True)
 
         elif selected_tab == "1Y":
             num_rows = math.ceil((df_pie1Y['symbol'].nunique()) / 4)
             rows_1Y = []
-            for i in range(num_rows + 2):
+            for i in range(num_rows + 3):
                 if (i == 0):
                     row = st.columns(5)
                     rows_1Y.append(row)
                 if (i == 1):
+                    row = st.columns(1)
+                    rows_1Y.append(row)
+                if (i == 2):
                     row = st.columns(2)
                     rows_1Y.append(row)
-                if (i > 1):
+                if (i > 2):
                     row = st.columns(4)
                     rows_1Y.append(row)
 
-            pie_plot(df_pie1Y, rows_1Y[1][1])
+            pie_plot(df_pie1Y, rows_1Y[2][1])
 
-            return_plot(df_change1Y,rows_1Y[1][0])
+            return_plot(df_change1Y,rows_1Y[2][0])
 
             last_column = df_change1Y.loc[:, 'Day']
-            for i in range(2, num_rows + 2):
+            for i in range(3, num_rows + 3):
                 for j in range(4):
-                    symbol_index = 4 * i + j - 8
+                    symbol_index = 4 * i + j - 12
                     if symbol_index < len(df_symbols1Y):
                         symbol = df_symbols1Y.loc[symbol_index, 'symbol']
                         first_column = df_change1Y.loc[:, symbol]
@@ -573,6 +630,9 @@ if selected == "📊 Our Portfolio":
                 """,
                 unsafe_allow_html=True
             )
+            with rows_1Y[1][0]:
+                st.write("**Welcome to our eclectic collection of investment gems!**")
+                st.write("**Each pick is hand-curated with love and a sprinkle of flair, ensuring your portfolio is as cool as a vintage vinyl record.**")
 
             with rows_1Y[0][0]:
                 rows_1Y[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",unsafe_allow_html=True)
@@ -595,19 +655,19 @@ elif selected == "🚀 Strategic Performance":
         rows[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Strategic Performance</h1>""",unsafe_allow_html=True)
 
     with rows[1][0]:
-        st.markdown("<h2 style='color:#74B6FF;'>What is Backtesting</h2>", unsafe_allow_html=True)
-        st.write("Backtesting is a simulation technique used to evaluate a trading strategy using historical data.")
-        st.write("Essentially, it allows traders and investors to test how a particular strategy would have performed if it had been used during a specific period in the past.")
-        st.markdown("<h2 style='color:#74B6FF;'>Why is Backtesting Important for Trading</h2>", unsafe_allow_html=True)
+        st.write("")
+        st.write("Alright, let's dive into the history of Strategic Performance of the algo. Picture this: it's like taking your trading strategy for a spin in a time machine called Backtesting.")
+        st.write("Backtesting, is basically a way to throw your trading strategy back in time and see how it would've grooved with historical data.")
+        st.write("It's like saying, Hey, strategy, let's see if you would've rocked it back in the '90s!")
+        st.markdown("<h5 style='color:#74B6FF;'>Why should you care about Backtesting in your trading journey? Well, for starters</h5>", unsafe_allow_html=True)
         st.write("**1. Validating Strategy Performance:**")
-        st.write("   Backtesting allows traders to validate their trading strategies by objectively testing them against historical data. ")
-        st.write("This helps in understanding if the strategy is robust and capable of generating profits.")
-        st.write("**2. Building Confidence:**")
-        st.write("   Successful backtesting results can provide traders with confidence in their strategies. ")
-        st.write("It offers a level of assurance that the chosen approach has the potential to generate profits based on historical performance.")
+        st.write("Backtesting lets you put your strategy through the historical ringer. It's like giving it an old-school test drive to see if it's got the moves to make you some serious coin.")
+        st.write("**2. Boosting Confidence:**")
+        st.write("When those backtesting results come back positive, it gives you confidence!")
+        st.write("Picture yourself strolling down Wall Street, fully aware that your strategy boasts the historical prowess to make those profits harmonize.")
         st.write("**3. Comparing Strategies:**")
-        st.write("   Traders can compare multiple strategies using backtesting to determine which ones are more effective. ")
-        st.write("This allows for data-driven decision-making in strategy selection.")
+        st.write("Just like curating the perfect retro outfit, traders can use backtesting to compare different strategies.")
+        st.write("It's all about finding that ideal match for your trading style. You'll be making data-driven decisions akin to a seasoned collector, selecting the strategy that hits all the right notes for success.")
         st.write("")
         st.write("")
 
@@ -707,27 +767,28 @@ elif selected == "📈 Fundamentals":
     merged_df.columns = ['symbol', 'Property, Plant, And Equipment_4','Research And Development Expenses', 'Stock Based Compensation','Total Non Cash Items']
 
     with rows[0][0]:
-        rows[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Fundamentals</h1>""",unsafe_allow_html=True)
+        rows[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Financial Strategic Algo Metrics</h1>""",unsafe_allow_html=True)
 
     with rows[1][0]:
-        st.markdown("<h3 style='color:#74B6FF;'>Key Finance Indicators for Backtesting Trading Strategies</h3>", unsafe_allow_html=True)
-        st.write("The finance indicators below play crucial roles in backtesting trading strategies and assessing companies future potential.")
+        st.write("**Alright, fellow financial aficionados, let's dive into the groovy world of Key Finance Indicators for our rad algorithm.**")
+        st.write("**These metrics are like the vinyl records of our strategy—essential, timeless, and oh-so-trendy.**")
+        st.write("")
         st.markdown("<h5 style='color:#74B6FF;'>1. Property, Plant, and Equipment</h5>", unsafe_allow_html=True)
-        st.write("Property, Plant, and Equipment (PP&E) refers to the long-term tangible assets that a company uses in its operations to generate revenue. ")
-        st.write("These can include buildings, machinery, equipment, vehicles, and land.")
-        st.write("A rising trend in PP&E could suggest that the company is investing in its future, potentially leading to increased production capacity, efficiency, and competitiveness.")
+        st.write("Picture this: buildings, machinery, equipment, vehicles, and land—these are the tangible treasures of a company.")
+        st.write("A rising PP&E trend? It's like watching a band gear up for a killer tour.")
+        st.write("It hints at the company beefing up for the future, ready to rock with increased production capacity, efficiency, and all-around competitiveness.")
+
         st.markdown("<h5 style='color:#74B6FF;'>2. Research and Development Expenses (R&D)</h5>", unsafe_allow_html=True)
-        st.write("Research and Development Expenses (R&D) refer to the costs incurred by a company to develop new products, services, or technologies. ")
-        st.write("These expenses are aimed at improving existing products or creating new ones.")
-        st.write("Increasing R&D expenses might suggest potential for future revenue growth from new products or improved offerings.")
+        st.write("Ah, the creative side of the financial stage. R&D expenses are the company's investment in new jams—products, services, or tech wonders.")
+        st.write("It's like watching a band hit the studio to craft their next chart-topper. More R&D moolah? Get ready for potential revenue growth, new hits, and crowd-pleasing offerings.")
+
         st.markdown("<h5 style='color:#74B6FF;'>3. Stock-Based Compensation</h5>", unsafe_allow_html=True)
-        st.write("Stock-Based Compensation refers to the issuance of company stock or stock options to employees as part of their compensation package. ")
-        st.write("This can include stock options, restricted stock units (RSUs), or other equity-based incentives.")
-        st.write("Increasing stock-based compensation could suggest confidence in the company's future stock performance.")
+        st.write("Now, this one's the VIP pass to the company's inner circle. Stock-based compensation is like handing out backstage passes to the team, rewarding them with company stock or options.")
+        st.write("It's the company saying, Hey, we're feeling good about our next album. So, if you spot an increase in stock perks, you might just be witnessing confidence in future stock performances.")
+
         st.markdown("<h5 style='color:#74B6FF;'>4. Total Non-Cash Items</h5>", unsafe_allow_html=True)
-        st.write("Total Non-Cash Items refer to all non-cash transactions that impact a company's financial statements. ")
-        st.write("This can include items such as depreciation, amortization, stock-based compensation, and other non-cash expenses or gains.")
-        st.write("Higher total non-cash items might indicate a company's ability to manage expenses efficiently without affecting its cash position.")
+        st.write("Think of this as the acoustic set in the financial concert. Total Non-Cash Items cover all the backstage magic—depreciation, amortization, stock perks, and other non-cash moves.")
+        st.write("High total non-cash items? It's like the company hitting all the right notes, showing off its ability to manage expenses like a seasoned rockstar, without missing a beat on the cash front.")
         st.write("")
         st.write("")
 
@@ -741,33 +802,62 @@ elif selected == "📈 Fundamentals":
                 "Stock Based Compensation": st.column_config.BarChartColumn("Stock Based Compensation"),
                 "Total Non Cash Items": st.column_config.BarChartColumn("Total Non Cash Items"),
             },
-            hide_index=True, height=int(np.round(37.17 * len(c1))), width=900,
+            hide_index=True, height=int(np.round(37.17 * len(c1))),
         )
 ##############################################################################################################################################################################################
 elif selected == "🎯 Our Strategic":
     rows = [st.columns(1),st.columns(2),st.columns(2)]
 
     with rows[0][0]:
-        rows[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Strategic</h1>""",unsafe_allow_html=True)
+        #rows[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Moo-lah</h1>""",unsafe_allow_html=True)
+        #rows[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Where a Magical Algorithm Meets Market!</h1>""",unsafe_allow_html=True)
+        css = """
+        <style>
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animated {
+          animation: fadeInUp 4s ease;
+        }
+        </style>
+        """
+
+        # Add CSS to Streamlit
+        st.markdown(css, unsafe_allow_html=True)
+
+        # Animated title
+        title_html = """
+        <div class="animated">
+          <h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Moo-lah :</h1>
+          <h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Where a Magical Algorithm Meets Market!</h1>
+        </div>
+        """
+
+        st.markdown(title_html, unsafe_allow_html=True)
 
     with rows[1][0]:
-        st.markdown("<h2 style='color:#74B6FF;'>How Our Algorithm Identifies Winning Stocks</h2>", unsafe_allow_html=True)
-        st.write("Our algorithm is designed to pinpoint stocks in the introduction stage of the product life cycle. "
-                 "By analyzing company data and trends, we can identify emerging products with huge growth potential.")
-        st.markdown("<h2 style='color:#74B6FF;'>Maximizing Growth Stage Profits</h2>", unsafe_allow_html=True)
-        st.write("Once a stock is identified in the introduction stage, we ride the wave of growth. "
-                 "Our algorithm ensures that we take full of the growth period, maximizing profits.")
-        st.markdown("<h2 style='color:#74B6FF;'>Why It Works</h2>", unsafe_allow_html=True)
-        st.write("Cutting-edge technology analyzes market signals to spot products on the cusp of explosive growth. "
-                 "By getting in early, we reap the rewards as the product gains popularity. "
-                 "Our track record speaks for itself.")
-        st.write("Join Us in Profiting from Innovation.")
-        st.write("Don't miss out on the opportunity to invest in the next big thing. "
-                 "Our algorithm does the lifting, so you can enjoy the profits. "
-                 "Invest confidently, knowing you're ahead of the curve with our proven approach. Start Investing Wisely Today.")
-        st.write(
-            "Discover how our algorithm can help you identify stocks in the introduction stage for maximum growth. "
-            "Let's embark on a profitable journey together.")
+        st.markdown("<h2 style='color:#74B6FF;'>What's the Deal with Cash Cows?</h2>", unsafe_allow_html=True)
+        st.write("Cash cows are like the rockstars of the market scene. They're the top dogs, the ones with mad positive cash flow vibes, and returns that outshine market growth rates. These bad boys keep on bringing in the dough long after the initial investment's dust has settled. Talk about moo-lah magic! 🐄✨")
+        st.markdown("<h2 style='color:#74B6FF;'>Why Our Algorithm Nails Winning Stocks?</h2>", unsafe_allow_html=True)
+        st.write("Our algorithm? Oh, it's like having a crystal ball for spotting stocks in their cool, emerging phase. We're all about that cutting-edge, trend-surfing life.")
+        st.write("")
+        st.markdown("<h5 style='color:#74B6FF;'>Riding the Growth Wave</h5>", unsafe_allow_html=True)
+        st.write("Once we've snatched up a stock in its prime intro phase, we're catching that growth wave like seasoned surfers. Our algorithm? It's our secret sauce for maximizing those sweet, sweet profits. 🏄‍♂️💸")
+        st.markdown("<h2 style='color:#74B6FF;'>Why We're the Pinnacle of Innovation?</h2>", unsafe_allow_html=True)
+        st.write("Our technology is so cutting-edge, it practically exudes the scent of innovation. We thrive on seizing opportunities early, capitalizing on the buzz surrounding a product as it gains traction. Doubt our prowess? Take a glance at our track record—it's hotter than a cup of artisanal coffee. ☕💼")
+        st.write("")
+        st.write("")
+        st.write("")
+        st.write("Get on Board the Profit Express!")
+        st.write("Don't be the one left sipping last year's brew. Get in on the ground floor of the next big thing with us. Invest with swagger, knowing you're way ahead of the curve. Ready to dive into the profit pool? Let's rock this investing gig together! 🚀💰")
 
     with rows[1][1]:
         display_image('https://github.com/dudilu/Advisor/raw/main/cash%20cow1.jpg')
@@ -782,16 +872,16 @@ elif selected == "🕵️‍♂️ About":
     with rows[1][0]:
         st.write("I'm Dudi")
         st.write("")
-        st.write("With a background in electrical engineering and a specialization in data science, I've always been fascinated by the power of algorithms to make sense of complex data.")
-        st.write("After years of honing my skills in both academia and industry, I decided to combine my expertise to create something truly unique—a stock recommendation app driven by cutting-edge AI.")
+        st.write("The self-proclaimed number whisperer with a knack for dissecting mind-boggling data making numbers do the cha-cha.")
+        st.write("After years of being the data nerd in both the ivory towers of academia and the soul-sucking depths of the industry, I thought, Why not merge my powers to create something... something... uh, unique?")
         st.write("")
-        st.write("Our app is the result of countless hours of research, development, and testing, all aimed at providing you with intelligent, data-driven stock suggestions. ")
-        st.write("My passion for data and technology is what drives me to constantly improve our algorithms and ensure that you receive the most accurate and valuable insights.")
+        st.write("So, voila! We present to you our glorious creation: a stock recommendation app that's basically your financial fairy godmother, but with more lines of code.")
+        st.write("This app? Oh, it's been through more makeovers than a Kardashian. Countless hours of research, testing, and sacrificing the occasional laptop to the algorithm gods have gone into this bad boy.")
         st.write("")
-        st.write("I invite you to join me on this exciting journey into the world of data-driven investing.")
-        st.write("Together, let's explore new opportunities and make informed decisions that pave the way to financial success.")
+        st.write("I live for this stuff, folks. I mean, if I'm not neck-deep in data, am I even breathing? Improving algorithms is my jam—like a mad scientist but with fewer explosions (mostly).")
+        st.write("Join me, won't you? Let's dive headfirst into the deep, dark abyss of data-driven investing. Because who needs sleep when you're riding the rollercoaster of financial success?")
         st.write("")
-        st.write("Thank you for choosing Moolah,")
+        st.write("Cheers to choosing Moolah,")
         st.write("")
         st.write("Dudi")
     with rows[1][1]:
