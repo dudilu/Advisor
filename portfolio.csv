@@ -1,0 +1,56 @@
+symbol,publish,date_publish,date_start,days_from_buy,industry,date_next_qtr,days to sell,Active
+MELI,"Feb 23, 2023",23/02/2023,13/04/2023,338,Internet Retail,21/02/2024,-25,closed
+INTU,"Feb 23, 2023",23/02/2023,13/04/2023,338,Software - Application,21/02/2024,-25,closed
+ZM,"Feb 27, 2023",27/02/2023,17/04/2023,334,Software - Application,26/02/2024,-20,closed
+ZS,"Mar 02, 2023",02/03/2023,20/04/2023,331,Software - Infrastructure,29/02/2024,-17,closed
+CRWD,"Mar 07, 2023",07/03/2023,25/04/2023,326,Software - Infrastructure,05/03/2024,-12,closed
+GOOG,"Apr 25, 2023",25/04/2023,13/06/2023,277,Internet Content & Information,31/01/2024,-46,active
+META,"Apr 26, 2023",26/04/2023,14/06/2023,276,Internet Content & Information,30/01/2024,-47,active
+SNAP,"Apr 27, 2023",27/04/2023,15/06/2023,275,Internet Content & Information,29/01/2024,-48,active
+AMZN,"Apr 27, 2023",27/04/2023,15/06/2023,275,Internet Retail,31/01/2024,-46,active
+AMD,"May 02, 2023",02/05/2023,20/06/2023,270,Semiconductors,29/01/2024,-48,active
+MELI,"May 03, 2023",03/05/2023,21/06/2023,269,Internet Retail,21/02/2024,-25,active
+QCOM,"May 03, 2023",03/05/2023,21/06/2023,269,Semiconductors,31/01/2024,-46,active
+TWLO,"May 09, 2023",09/05/2023,27/06/2023,263,Internet Content & Information,13/02/2024,-33,active
+ZM,"May 22, 2023",22/05/2023,10/07/2023,250,Software - Application,26/02/2024,-20,active
+INTU,"May 23, 2023",23/05/2023,11/07/2023,249,Software - Application,21/02/2024,-25,active
+CRWD,"May 31, 2023",31/05/2023,19/07/2023,241,Software - Infrastructure,05/03/2024,-12,active
+ZS,"Jun 01, 2023",01/06/2023,20/07/2023,240,Software - Infrastructure,29/02/2024,-17,active
+GOOG,"Jul 25, 2023",25/07/2023,12/09/2023,186,Internet Content & Information,31/01/2024,-46,active
+SNAP,"Jul 25, 2023",25/07/2023,12/09/2023,186,Internet Content & Information,29/01/2024,-48,active
+META,"Jul 26, 2023",26/07/2023,13/09/2023,185,Internet Content & Information,30/01/2024,-47,active
+AMD,"Aug 01, 2023",01/08/2023,19/09/2023,179,Semiconductors,29/01/2024,-48,active
+DASH,"Aug 02, 2023",02/08/2023,20/09/2023,178,Internet Content & Information,14/02/2024,-32,active
+MELI,"Aug 02, 2023",02/08/2023,20/09/2023,178,Internet Retail,21/02/2024,-25,active
+AMZN,"Aug 03, 2023",03/08/2023,21/09/2023,177,Internet Retail,31/01/2024,-46,active
+ZM,"Aug 21, 2023",21/08/2023,09/10/2023,159,Software - Application,26/02/2024,-20,active
+SNOW,"Aug 23, 2023",23/08/2023,11/10/2023,157,Software - Application,28/02/2024,-18,active
+INTU,"Aug 24, 2023",24/08/2023,12/10/2023,156,Software - Application,21/02/2024,-25,active
+CRM,"Aug 30, 2023",30/08/2023,18/10/2023,150,Software - Application,28/02/2024,-18,active
+CRWD,"Aug 30, 2023",30/08/2023,18/10/2023,150,Software - Infrastructure,05/03/2024,-12,active
+ZS,"Sep 05, 2023",05/09/2023,24/10/2023,144,Software - Infrastructure,29/02/2024,-17,active
+GOOG,"Oct 24, 2023",24/10/2023,12/12/2023,95,Internet Content & Information,31/01/2024,-46,active
+SNAP,"Oct 24, 2023",24/10/2023,12/12/2023,95,Internet Content & Information,29/01/2024,-48,active
+META,"Oct 25, 2023",25/10/2023,13/12/2023,94,Internet Content & Information,30/01/2024,-47,active
+AMZN,"Oct 26, 2023",26/10/2023,14/12/2023,93,Internet Retail,31/01/2024,-46,active
+DASH,"Nov 01, 2023",01/11/2023,20/12/2023,87,Internet Content & Information,14/02/2024,-32,active
+MELI,"Nov 01, 2023",01/11/2023,20/12/2023,87,Internet Retail,21/02/2024,-25,active
+APP,"Nov 08, 2023",08/11/2023,27/12/2023,80,Software - Application,14/02/2024,-32,active
+U,"Nov 09, 2023",09/11/2023,28/12/2023,79,Software - Application,20/02/2024,-26,active
+ZM,"Nov 20, 2023",20/11/2023,08/01/2024,68,Software - Application,,,active
+ZS,"Nov 27, 2023",27/11/2023,15/01/2024,61,Software - Infrastructure,,,active
+INTU,"Nov 28, 2023",28/11/2023,16/01/2024,60,Software - Application,,,active
+CRWD,"Nov 28, 2023",28/11/2023,16/01/2024,60,Software - Infrastructure,,,active
+SNOW,"Nov 29, 2023",29/11/2023,17/01/2024,59,Software - Application,,,active
+CRM,"Nov 29, 2023",29/11/2023,17/01/2024,59,Software - Application,,,active
+GOOG,"Jan 30, 2024",30/01/2024,19/03/2024,-3,Internet Content & Information,,,buy
+META,"Feb 01, 2024",01/02/2024,21/03/2024,-5,Internet Content & Information,,,buy
+SNAP,"Feb 06, 2024",06/02/2024,26/03/2024,-10,Internet Content & Information,,,buy
+RBLX,"Feb 07, 2024",07/02/2024,27/03/2024,-11,Electronic Gaming & Multimedia,,,buy
+DDOG,"Feb 13, 2024",13/02/2024,02/04/2024,-17,Software - Application,,,buy
+APP,"Feb 14, 2024",14/02/2024,03/04/2024,-18,Software - Application,,,buy
+DASH,"Feb 15, 2024",15/02/2024,04/04/2024,-19,Internet Content & Information,,,buy
+MELI,"Feb 22, 2024",22/02/2024,11/04/2024,-26,Internet Retail,,,buy
+INTU,"Feb 22, 2024",22/02/2024,11/04/2024,-26,Software - Application,,,buy
+CRM,"Feb 28, 2024",28/02/2024,17/04/2024,-32,Software - Application,,,buy
+ZS,"Feb 29, 2024",29/02/2024,18/04/2024,-33,Software - Infrastructure,,,buy
