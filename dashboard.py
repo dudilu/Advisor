@@ -817,10 +817,10 @@ elif selected == "📈 Fundamentals":
             merged_df,
             column_config={
                 "symbol": "Symbol",
-                "Property, Plant, And Equipment_4": st.column_config.BarChartColumn("Property, Plant, And Equipment"),
-                "Research And Development Expenses": st.column_config.BarChartColumn("Research And Development Expenses"),
-                "Stock Based Compensation": st.column_config.BarChartColumn("Stock Based Compensation"),
-                "Total Non Cash Items": st.column_config.BarChartColumn("Total Non Cash Items"),
+                "Property, Plant, And Equipment_4": st.column_config.LineChartColumn("Property, Plant, And Equipment"),
+                "Research And Development Expenses": st.column_config.LineChartColumn("Research And Development Expenses"),
+                "Stock Based Compensation": st.column_config.LineChartColumn("Stock Based Compensation"),
+                "Total Non Cash Items": st.column_config.LineChartColumn("Total Non Cash Items"),
             },
              height=int(np.round(37.17 * len(c1))),use_container_width=True
         )
