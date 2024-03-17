@@ -6,11 +6,9 @@ from streamlit_option_menu import option_menu
 import plotly.express as px
 import plotly.graph_objects as go
 import math
-import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import time
 import re
 import base64
 import matplotlib.pyplot as plt
@@ -500,7 +498,7 @@ if selected == "📊 Our Portfolio":
             with rows_1Q[1][0]:
                 st.write("**Welcome to our eclectic collection of investment gems!**")
                 st.write(
-                    "**Each pick is hand-curated with love and a sprinkle of flair, ensuring your portfolio is as cool as a vintage vinyl record.**")
+                    "**Each pick is thoughtfully selected with care and a hint of sophistication, ensuring your portfolio sparkles like a prized piece of fine art.**")
 
             with rows_1Q[0][0]:
                 rows_1Q[0][0].markdown(
@@ -656,7 +654,7 @@ elif selected == "🚀 Strategic Performance":
 
     with rows[1][0]:
         st.write("")
-        st.write("Alright, let's dive into the history of Strategic Performance of the algo. Picture this: it's like taking your trading strategy for a spin in a time machine called Backtesting.")
+        st.write("Alright, let's dive into the history of Strategic Performance of the algo. It's like taking your trading strategy for a spin in a time machine called Backtesting.")
         st.write("Backtesting, is basically a way to throw your trading strategy back in time and see how it would've grooved with historical data.")
         st.write("It's like saying, Hey, strategy, let's see if you would've rocked it back in the '90s!")
         st.markdown("<h5 style='color:#74B6FF;'>Why should you care about Backtesting in your trading journey? Well, for starters</h5>", unsafe_allow_html=True)
@@ -744,7 +742,7 @@ elif selected == "🚀 Strategic Performance":
         </div> """.format(color=color, arrow_icon=arrow_icon, percentage=percentage), unsafe_allow_html=True)
 ##############################################################################################################################################################################################
 elif selected == "📈 Fundamentals":
-    rows = [st.columns(1),st.columns(1),st.columns(1)]
+    rows = [st.columns(1),st.columns(1),st.columns(2),st.columns(2),st.columns(1)]
 
     why = pd.read_csv('https://raw.githubusercontent.com/dudilu/Advisor/main/WHY.csv')
 
@@ -773,26 +771,48 @@ elif selected == "📈 Fundamentals":
         st.write("**Alright, fellow financial aficionados, let's dive into the groovy world of Key Finance Indicators for our rad algorithm.**")
         st.write("**These metrics are like the vinyl records of our strategy—essential, timeless, and oh-so-trendy.**")
         st.write("")
-        st.markdown("<h5 style='color:#74B6FF;'>1. Property, Plant, and Equipment</h5>", unsafe_allow_html=True)
-        st.write("Picture this: buildings, machinery, equipment, vehicles, and land—these are the tangible treasures of a company.")
-        st.write("A rising PP&E trend? It's like watching a band gear up for a killer tour.")
-        st.write("It hints at the company beefing up for the future, ready to rock with increased production capacity, efficiency, and all-around competitiveness.")
-
-        st.markdown("<h5 style='color:#74B6FF;'>2. Research and Development Expenses (R&D)</h5>", unsafe_allow_html=True)
-        st.write("Ah, the creative side of the financial stage. R&D expenses are the company's investment in new jams—products, services, or tech wonders.")
-        st.write("It's like watching a band hit the studio to craft their next chart-topper. More R&D moolah? Get ready for potential revenue growth, new hits, and crowd-pleasing offerings.")
-
-        st.markdown("<h5 style='color:#74B6FF;'>3. Stock-Based Compensation</h5>", unsafe_allow_html=True)
-        st.write("Now, this one's the VIP pass to the company's inner circle. Stock-based compensation is like handing out backstage passes to the team, rewarding them with company stock or options.")
-        st.write("It's the company saying, Hey, we're feeling good about our next album. So, if you spot an increase in stock perks, you might just be witnessing confidence in future stock performances.")
-
-        st.markdown("<h5 style='color:#74B6FF;'>4. Total Non-Cash Items</h5>", unsafe_allow_html=True)
-        st.write("Think of this as the acoustic set in the financial concert. Total Non-Cash Items cover all the backstage magic—depreciation, amortization, stock perks, and other non-cash moves.")
-        st.write("High total non-cash items? It's like the company hitting all the right notes, showing off its ability to manage expenses like a seasoned rockstar, without missing a beat on the cash front.")
-        st.write("")
-        st.write("")
-
     with rows[2][0]:
+        st.markdown("<div class='bordered'><h5 style='color:#74B6FF;'>Property, Plant, and Equipment</h5>"
+                    "<p>Picture this: buildings, machinery, equipment, vehicles, and land—these are the tangible treasures of a company.</p>"
+                    "<p>A growing trend in PP&E ?</p>"
+                    "<p>It suggests the company is gearing up for the future, all set to excel with increased production capacity, efficiency, and competitiveness across the board.</p>"
+                    "</div>", unsafe_allow_html=True)
+    with rows[2][1]:
+        st.markdown("<div class='bordered'><h5 style='color:#74B6FF;'>Research and Development Expenses (R&D)</h5>"
+                    "<p>Ah, the creative side of the financial stage. R&D expenses are the company's investment whether they be products, services, or technological marvels.—products, services, or tech wonders.</p>"
+                    "<p>More investment in R&D ?</p>"
+                    "<p>Get ready for potential revenue growth, new products, and offerings that captivate the customers</p>"
+                    "</div>", unsafe_allow_html=True)
+    with rows[3][0]:
+        st.markdown("<div class='bordered'><h5 style='color:#74B6FF;'>Stock-Based Compensation</h5>"
+                    "<p>Stock-based compensation are like distributing passports to the team, granting them access to company shares or options.</p>"
+                    "<p>It's the company's way of saying, Hey, we're paving the way for exciting journeys ahead!</p>"
+                    "<p>So, if you observe a surge in stock incentives, it might signify a strong belief in the promising destinations the company is headed towards.It signal a blossoming confidence in the growth and economic prosperity.</p>"
+                    "</div>", unsafe_allow_html=True)
+
+    with rows[3][1]:
+        st.markdown("<div class='bordered'><h5 style='color:#74B6FF;'>Total Non-Cash Items</h5>"
+                    "<p>Ah, the tale of non-cash items!</p>"
+                    "<p>Is it a waltz with depreciation, more stock-based or a flirt with strategic decisions? Either way looks like the company's gearing up for growth, paving the way for future profits.</p>"
+                    "</div>", unsafe_allow_html=True)
+
+    st.markdown(
+        """
+        <style>
+            .bordered {
+                border: 1px solid #e2e2e2;
+                border-radius: 20px;
+                overflow: hidden;
+                padding: 15px;
+                margin-bottom: 15px;
+                height: 250px;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    with rows[4][0]:
         st.data_editor(
             merged_df,
             column_config={
@@ -802,15 +822,13 @@ elif selected == "📈 Fundamentals":
                 "Stock Based Compensation": st.column_config.BarChartColumn("Stock Based Compensation"),
                 "Total Non Cash Items": st.column_config.BarChartColumn("Total Non Cash Items"),
             },
-            hide_index=True, height=int(np.round(37.17 * len(c1))),
+             height=int(np.round(37.17 * len(c1))),use_container_width=True
         )
 ##############################################################################################################################################################################################
 elif selected == "🎯 Home":
     rows = [st.columns(1),st.columns(2),st.columns(2)]
 
     with rows[0][0]:
-        #rows[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Moo-lah</h1>""",unsafe_allow_html=True)
-        #rows[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Where a Magical Algorithm Meets Market!</h1>""",unsafe_allow_html=True)
         css = """
         <style>
         @keyframes fadeInUp {
