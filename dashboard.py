@@ -431,7 +431,7 @@ st.set_page_config(page_title="Moo-lah!",layout='wide',initial_sidebar_state="au
 
 with st.sidebar:
     #selected = option_menu("Main Menu", ['Our Strategic', 'Our Portfolio', 'Fundamentals', 'Strategic Performance'], icons=['briefcase', 'star', 'clock', 'question-circle'], menu_icon="cast")
-    selected = option_menu("Main Menu", ['🎯 Home', '📊 Our Portfolio', '📈 Fundamentals', '🚀 Strategic Performance', '🕵️‍♂️ About'], menu_icon="cast")
+    selected = option_menu("Main Menu", ['🏠 Home', '📊 Our Portfolio', '📈 Fundamentals', '🚀 Strategic Performance', '🕵️‍♂️ About'], menu_icon="cast")
 
     if selected == "📊 Our Portfolio":
         selected_tab = st.selectbox("Select a Period", ["1Y", "0.5Y", "1Q"])
