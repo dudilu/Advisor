@@ -825,7 +825,7 @@ elif selected == "📈 Fundamentals":
              height=int(np.round(37.17 * len(c1))),use_container_width=True
         )
 ##############################################################################################################################################################################################
-elif selected == "🎯 Home":
+elif selected == "🏠 Home":
     rows = [st.columns(1),st.columns(2),st.columns(2)]
 
     with rows[0][0]:
