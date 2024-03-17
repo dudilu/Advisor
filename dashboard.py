@@ -805,7 +805,7 @@ elif selected == "📈 Fundamentals":
                 overflow: hidden;
                 padding: 15px;
                 margin-bottom: 15px;
-                height: 250px;
+                #height: 250px;
             }
         </style>
         """,
