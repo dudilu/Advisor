@@ -549,7 +549,7 @@ with st.sidebar:
 
 
     if selected == "📊 Our Portfolio":
-    #    selected_tab = st.selectbox("Select a Period", ["1Y", "0.5Y", "1Q"])
+    #   selected_tab = st.selectbox("Select a Period", ["1Y", "0.5Y", "1Q"])
         1 = 1
 
     elif selected == "🚀 Strategic Performance":
