@@ -613,7 +613,7 @@ if selected == "📊 Our Portfolio":
                 unsafe_allow_html=True
             )
             with rows_1Q[1][0]:
-                st.write("**Welcome to our eclectic collection of investment gems!**")
+                st.write("**Welcome to our stock collection of investment gems!**")
                 st.write("")
 
 
@@ -689,7 +689,7 @@ if selected == "📊 Our Portfolio":
                 unsafe_allow_html=True
             )
             with rows_0_5Y[1][0]:
-                st.write("**Welcome to our eclectic collection of investment gems!**")
+                st.write("**Welcome to our stock collection of investment gems!**")
                 st.write("")
 
             with rows_0_5Y[0][0]:
@@ -771,7 +771,7 @@ if selected == "📊 Our Portfolio":
                     hide_index=True, use_container_width=True
                 )
             with rows_1Y[1][0]:
-                st.write("**Welcome to our eclectic collection of investment gems!**")
+                st.write("**Welcome to our stock collection of investment gems!**")
                 st.write("")
 
             with rows_1Y[0][0]:
