@@ -614,8 +614,7 @@ if selected == "📊 Our Portfolio":
             )
             with rows_1Q[1][0]:
                 st.write("**Welcome to our eclectic collection of investment gems!**")
-                st.write(
-                    "**Each pick is thoughtfully selected with care and a hint of sophistication, ensuring your portfolio sparkles like a prized piece of fine art.**")
+
 
             with rows_1Q[0][0]:
                 rows_1Q[0][0].markdown(
