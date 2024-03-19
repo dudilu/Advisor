@@ -555,7 +555,7 @@ with st.sidebar:
         start_date = pd.Timestamp(st.sidebar.date_input("Start date", min_value=performance['Date'].min(),max_value=performance['Date'].max(),value=performance['Date'].min()))
         end_date = pd.Timestamp(st.sidebar.date_input("End date", min_value=performance['Date'].min(),max_value=performance['Date'].max(),value=performance['Date'].max()))
 
-    user_email = st.text_input("**Stay on top of your investments! Sign up for our stock alerts.**")
+    user_email = st.text_input("**Stay on top of your investments! Sign up for our stock alerts for free**")
     if st.button("Submit"):
         if user_email:
             send_email("dudilu86@gmail.com", "User Details", f"User Email: {user_email}", "Content 2","Content 3", "Content 4")
