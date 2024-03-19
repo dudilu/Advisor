@@ -550,7 +550,7 @@ with st.sidebar:
 
     if selected == "📊 Our Portfolio":
     #   selected_tab = st.selectbox("Select a Period", ["1Y", "0.5Y", "1Q"])
-        1 = 1
+        fff = 1
 
     elif selected == "🚀 Strategic Performance":
         start_date = pd.Timestamp(st.sidebar.date_input("Start date", min_value=performance['Date'].min(),max_value=performance['Date'].max(),value=performance['Date'].min()))
