@@ -256,9 +256,62 @@ def process_dataframe(df):
         df.columns.difference(columns_to_exclude)].apply(
         lambda col: ((col - first_values[col.name]) / first_values[col.name]) * 100)
 
-    df['InvesTec'] = df.drop(['SPY', 'Day'], axis=1).mean(axis=1)
+    df['InvesTec'] = df.drop(['SPY', 'Day','number of nan'], axis=1).mean(axis=1)
 
     return df
+
+def set_active(row):
+    if row['days_from_buy'] > 300 and row['days to sell'] <= 4:
+        return 'closed'
+    elif row['days_from_buy'] < 0:
+        return 'buy'
+    else:
+        return 'active'
+def process_dataframe_frame(df):
+    df['number of nan'] = df.shape[1] - df.isnull().sum(axis=1) - 2
+    #df = df[df['number of nan'] > 5]
+
+    first_values = df.apply(lambda col: col.dropna().iloc[0])
+
+    columns_to_exclude = ['Day']
+
+    df[df.columns.difference(columns_to_exclude)] = df[
+        df.columns.difference(columns_to_exclude)].apply(
+        lambda col: ((col - first_values[col.name]) / first_values[col.name]) * 100)
+
+    df['InvesTec'] = df.drop(['SPY', 'Day','number of nan'], axis=1).mean(axis=1)
+
+    return df
+def table_live(df):
+    result = pd.melt(df, id_vars=['Day'], var_name='symbol', value_name='Price')
+    result = result.dropna()
+
+    first_prices = result.groupby('symbol')['Price'].first()
+    last_prices = result.groupby('symbol')['Price'].last()
+    Date_Buy = result.groupby('symbol')['Day'].first()
+
+    final_df = pd.DataFrame({
+        'Symbol': first_prices.index,
+        'Date Buy': Date_Buy.values,
+        'Price Open': first_prices.values,
+        'Price Today': last_prices.values
+
+    })
+
+    final_df['Change[%]'] = (final_df['Price Today'] - final_df['Price Open']) / final_df['Price Open']
+    final_df['Change[%]'] = final_df['Change[%]'].map(lambda x: '{:.2%}'.format(x))
+    final_df['Price Open'] = pd.to_numeric(final_df['Price Open'], errors='coerce')
+    final_df['Price Open'] = final_df['Price Open'].round(2)
+    final_df['Price Today'] = pd.to_numeric(final_df['Price Today'], errors='coerce')
+    final_df['Price Today'] = final_df['Price Today'].round(2)
+
+    final_df['Symbol'] = final_df['Symbol'].str.split('_').str[0]
+    final_df = final_df[final_df['Symbol'].isin(['SPY', 'number of nan']) == False]
+    final_df = final_df.sort_values(by='Date Buy', ascending=False)
+    final_df = final_df.reset_index(drop=True)
+    final_df['Date Buy'] = final_df['Date Buy'].dt.strftime('%m/%d/%Y')
+
+    return final_df
 def pie_plot(df, container):
     industry_counts = df.groupby('industry')['symbol'].count().reset_index()
 
@@ -283,6 +336,12 @@ def pie_plot(df, container):
 ##############################################################################################################################################################################################
 # Data prep
 list_advisor = pd.read_csv('https://raw.githubusercontent.com/dudilu/Advisor/main/portfolio.csv')
+
+list_advisor['date_start'] = pd.to_datetime(list_advisor['date_start'])
+today = datetime.today()
+list_advisor['days_from_buy'] = (today - list_advisor['date_start']).dt.days
+list_advisor['Active'] = list_advisor.apply(set_active, axis=1)
+
 list_advisor = list_advisor[list_advisor['Active'] == 'active']
 
 df_pie = list_advisor
@@ -334,7 +393,7 @@ for advisor in list_advisor:
         retries = 10
         while retries > 0:
             try:
-                dates_oldest_date = yf.download(symbolWO, start=start_date + pd.DateOffset(days=35), end=end_date)
+                dates_oldest_date = yf.download(symbolWO, start=start_date + pd.DateOffset(days=49), end=end_date)
                 break
             except KeyError:
                 retries -= 1
@@ -343,7 +402,7 @@ for advisor in list_advisor:
     retries = 10
     while retries > 0:
         try:
-            stock_data = yf.download(symbolWO, start=start_date + pd.DateOffset(days=35), end=end_date)
+            stock_data = yf.download(symbolWO, start=start_date + pd.DateOffset(days=49), end=end_date)
             break
         except KeyError:
             retries -= 1
@@ -372,9 +431,14 @@ for col in df_close_prices.columns:
     df_close_prices[col] = new_column
 
 df_close_prices['Day'] = df_close_prices.index
+table_live_frame = table_live(df_close_prices)
 
 [df_change1Q, df_change0p5Y, df_change1Y] = [df_close_prices.filter(regex='(_1Q|SPY|InvesTec|Day)'), df_close_prices.filter(regex='(1Q|_0_5Y|SPY|InvesTec|Day)'), df_close_prices]
 [df_change1Q, df_change0p5Y, df_change1Y] = [process_dataframe(df_change1Q), process_dataframe(df_change0p5Y), process_dataframe(df_change1Y)]
+
+[df_change1Q_frame, df_change0p5Y_frame, df_change1Y_frame] = [df_close_prices.filter(regex='(_1Q|SPY|InvesTec|Day)'), df_close_prices.filter(regex='(1Q|_0_5Y|SPY|InvesTec|Day)'), df_close_prices]
+[df_change1Q_frame, df_change0p5Y_frame, df_change1Y_frame] = [process_dataframe_frame(df_change1Q_frame), process_dataframe_frame(df_change0p5Y_frame), process_dataframe_frame(df_change1Y_frame)]
+
 
 to_drop = ['Day', 'number of nan', 'InvesTec', 'SPY']
 
@@ -406,8 +470,42 @@ seen = set()
 symbols1Q = [x for x in symbols1Q if not (x in seen or seen.add(x))]
 df_symbols1Q = pd.DataFrame(symbols1Q, columns=['symbol'])
 for symbol in symbols1Q:
+    print(cols)
     cols = [col for col in df_change1Q.columns if symbol == col.split('_')[0]]
     df_change1Q[symbol] = df_change1Q[cols].mean(axis=1)
+
+
+symbols1Y_frame = [col.split('_')[0] for col in df_change1Y_frame.columns]
+
+symbols1Y_frame = [symbol for symbol in symbols1Y_frame if symbol not in to_drop]
+seen = set()
+symbols1Y_frame = [x for x in symbols1Y_frame if not (x in seen or seen.add(x))]
+df_symbols1Y_frame = pd.DataFrame(symbols1Y_frame, columns=['symbol'])
+for symbol in symbols1Y_frame:
+    cols = [col for col in df_change1Y_frame.columns if symbol == col.split('_')[0]]
+    df_change1Y_frame[symbol] = df_change1Y_frame[cols].mean(axis=1)
+
+symbols0_5Y_frame = [col.split('_')[0] for col in df_change0p5Y_frame.columns]
+
+symbols0_5Y_frame = [symbol for symbol in symbols0_5Y_frame if symbol not in to_drop]
+seen = set()
+symbols0_5Y_frame = [x for x in symbols0_5Y_frame if not (x in seen or seen.add(x))]
+df_symbols0_5Y_frame = pd.DataFrame(symbols0_5Y_frame, columns=['symbol'])
+for symbol in symbols0_5Y_frame:
+    cols = [col for col in df_change0p5Y_frame.columns if symbol == col.split('_')[0]]
+    df_change0p5Y_frame[symbol] = df_change0p5Y_frame[cols].mean(axis=1)
+
+
+symbols1Q_frame = [col.split('_')[0] for col in df_change1Q_frame.columns]
+
+symbols1Q_frame = [symbol for symbol in symbols1Q_frame if symbol not in to_drop]
+seen = set()
+symbols1Q_frame = [x for x in symbols1Q_frame if not (x in seen or seen.add(x))]
+df_symbols1Q_frame = pd.DataFrame(symbols1Q_frame, columns=['symbol'])
+for symbol in symbols1Q_frame:
+    cols = [col for col in df_change1Q_frame.columns if symbol == col.split('_')[0]]
+    df_change1Q_frame[symbol] = df_change1Q_frame[cols].mean(axis=1)
+
 
 logo_dir = 'https://raw.githubusercontent.com/dudilu/Advisor/main'
 
@@ -432,7 +530,8 @@ st.set_page_config(page_title="Moo-lah!",layout='wide',initial_sidebar_state="au
 with st.sidebar:
     #selected = option_menu("Main Menu", ['Our Strategic', 'Our Portfolio', 'Fundamentals', 'Strategic Performance'], icons=['briefcase', 'star', 'clock', 'question-circle'], menu_icon="cast")
     selected = option_menu("Main Menu", ['🏠 Home', '📊 Our Portfolio', '📈 Fundamentals', '🚀 Strategic Performance', '🕵️‍♂️ About'], menu_icon="cast")
-    
+
+
     # show_blog = False
     # def blog_menu():
     #     return option_menu("📝 Blog", ['  - Paper1',])
@@ -447,7 +546,8 @@ with st.sidebar:
 
     # if show_blog:
     #     selected_blog = blog_menu()
-    
+
+
     if selected == "📊 Our Portfolio":
         selected_tab = st.selectbox("Select a Period", ["1Y", "0.5Y", "1Q"])
 
@@ -481,18 +581,20 @@ if selected == "📊 Our Portfolio":
                 if (i > 2):
                     row = st.columns(4)
                     rows_1Q.append(row)
+            row = st.columns(1)
+            rows_1Q.append(row)
 
             pie_plot(df_pie1Q, rows_1Q[2][1])
 
             return_plot(df_change1Q, rows_1Q[2][0])
 
-            last_column = df_change1Q.loc[:, 'Day']
+            last_column = df_change1Q_frame.loc[:, 'Day']
             for i in range(3, num_rows + 3):
                 for j in range(4):
                     symbol_index = 4 * i + j - 12
-                    if symbol_index < len(df_symbols1Q):
-                        symbol = df_symbols1Q.loc[symbol_index, 'symbol']
-                        first_column = df_change1Q.loc[:, symbol]
+                    if symbol_index < len(df_symbols1Q_frame):
+                        symbol = df_symbols1Q_frame.loc[symbol_index, 'symbol']
+                        first_column = df_change1Q_frame.loc[:, symbol]
                         new_df = pd.DataFrame({'date': last_column, 'first': first_column})
                         background_image = logo_paths[symbol]
                         create_line_chart(rows_1Q[i][j], new_df, symbol, background_image=background_image,
@@ -525,6 +627,13 @@ if selected == "📊 Our Portfolio":
             color = "green" if percentage >= 0 else "red"
             arrow_icon = "▲" if percentage >= 0 else "▼"
 
+            with rows_1Q[i + 1][0]:
+                st.write("**All Deals from the Last Year:**")
+                st.data_editor(
+                    table_live_frame,
+
+                    hide_index=True, use_container_width=True
+                )
             with rows_1Q[0][4]:
                 rows_1Q[0][4].markdown("""
                             <div style='border: 1px solid #e2e2e2; padding: 3px; border-radius: 800px; text-align: center;'>
@@ -548,18 +657,20 @@ if selected == "📊 Our Portfolio":
                 if (i > 2):
                     row = st.columns(4)
                     rows_0_5Y.append(row)
+            row = st.columns(1)
+            rows_0_5Y.append(row)
 
             pie_plot(df_pie_0_5Y, rows_0_5Y[2][1])
 
             return_plot(df_change0p5Y, rows_0_5Y[2][0])
 
-            last_column = df_change0p5Y.loc[:, 'Day']
+            last_column = df_change0p5Y_frame.loc[:, 'Day']
             for i in range(3, num_rows + 3):
                 for j in range(4):
                     symbol_index = 4 * i + j - 12
-                    if symbol_index < len(df_symbols0_5Y):
-                        symbol = df_symbols0_5Y.loc[symbol_index, 'symbol']
-                        first_column = df_change0p5Y.loc[:, symbol]
+                    if symbol_index < len(df_symbols0_5Y_frame):
+                        symbol = df_symbols0_5Y_frame.loc[symbol_index, 'symbol']
+                        first_column = df_change0p5Y_frame.loc[:, symbol]
                         new_df = pd.DataFrame({'date': last_column, 'first': first_column})
                         background_image = logo_paths[symbol]
                         create_line_chart(rows_0_5Y[i][j], new_df, symbol, background_image=background_image,
@@ -592,6 +703,14 @@ if selected == "📊 Our Portfolio":
             color = "green" if percentage >= 0 else "red"
             arrow_icon = "▲" if percentage >= 0 else "▼"
 
+            with rows_0_5Y[i + 1][0]:
+                st.write("**All Deals from the Last Year:**")
+                st.data_editor(
+                    table_live_frame,
+
+                    hide_index=True, use_container_width=True
+                )
+
             with rows_0_5Y[0][4]:
                 rows_0_5Y[0][4].markdown("""
                             <div style='border: 1px solid #e2e2e2; padding: 3px; border-radius: 800px; text-align: center;'>
@@ -615,18 +734,20 @@ if selected == "📊 Our Portfolio":
                 if (i > 2):
                     row = st.columns(4)
                     rows_1Y.append(row)
+            row = st.columns(1)
+            rows_1Y.append(row)
 
             pie_plot(df_pie1Y, rows_1Y[2][1])
 
             return_plot(df_change1Y,rows_1Y[2][0])
 
-            last_column = df_change1Y.loc[:, 'Day']
+            last_column = df_change1Y_frame.loc[:, 'Day']
             for i in range(3, num_rows + 3):
                 for j in range(4):
                     symbol_index = 4 * i + j - 12
-                    if symbol_index < len(df_symbols1Y):
-                        symbol = df_symbols1Y.loc[symbol_index, 'symbol']
-                        first_column = df_change1Y.loc[:, symbol]
+                    if symbol_index < len(df_symbols1Y_frame):
+                        symbol = df_symbols1Y_frame.loc[symbol_index, 'symbol']
+                        first_column = df_change1Y_frame.loc[:, symbol]
                         new_df = pd.DataFrame({'date': last_column, 'first': first_column})
                         background_image = logo_paths[symbol]
                         create_line_chart(rows_1Y[i][j], new_df, symbol, background_image=background_image, percentage=new_df['first'].iloc[-1])
@@ -643,6 +764,13 @@ if selected == "📊 Our Portfolio":
                 """,
                 unsafe_allow_html=True
             )
+            with rows_1Y[i + 1][0]:
+                st.write("**All Deals from the Last Year:**")
+                st.data_editor(
+                    table_live_frame,
+
+                    hide_index=True, use_container_width=True
+                )
             with rows_1Y[1][0]:
                 st.write("**Welcome to our eclectic collection of investment gems!**")
                 st.write("**Each pick is hand-curated with love and a sprinkle of flair, ensuring your portfolio is as cool as a vintage vinyl record.**")
@@ -712,6 +840,7 @@ elif selected == "🚀 Strategic Performance":
         fig.update_layout(title={'text': 'Compound Annual Growth Rate per Year', 'font': {'size': 22}})
         fig.update_xaxes(categoryorder='array', categoryarray=df_cagr['Year'], title=None)
         fig.update_yaxes(automargin=True, title=None, tickformat='.2%')
+
         fig.update_layout(hovermode='x unified')
 
         fig.update_layout(legend_title_text='', legend=dict(itemsizing='constant'))
