@@ -689,8 +689,6 @@ if selected == "📊 Our Portfolio":
             )
             with rows_0_5Y[1][0]:
                 st.write("**Welcome to our eclectic collection of investment gems!**")
-                st.write(
-                    "**Each pick is hand-curated with love and a sprinkle of flair, ensuring your portfolio is as cool as a vintage vinyl record.**")
 
             with rows_0_5Y[0][0]:
                 rows_0_5Y[0][0].markdown(
@@ -772,7 +770,6 @@ if selected == "📊 Our Portfolio":
                 )
             with rows_1Y[1][0]:
                 st.write("**Welcome to our eclectic collection of investment gems!**")
-                st.write("**Each pick is hand-curated with love and a sprinkle of flair, ensuring your portfolio is as cool as a vintage vinyl record.**")
 
             with rows_1Y[0][0]:
                 rows_1Y[0][0].markdown("""<h1 style='text-align: left; color: #49bd7a; font-weight: bold;'>Our Portfolio</h1>""",unsafe_allow_html=True)
