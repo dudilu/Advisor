@@ -837,7 +837,7 @@ elif selected == "🚀 Strategic Performance":
                      color_discrete_map={'Moolah': 'green', 'SPY': 'red'},
                      height=500)
 
-        fig.update_layout(title={'text': 'Compound Annual Growth Rate per Year', 'font': {'size': 22}})
+        fig.update_layout(title={'text': 'Annual Return By Year', 'font': {'size': 22}})
         fig.update_xaxes(categoryorder='array', categoryarray=df_cagr['Year'], title=None)
         fig.update_yaxes(automargin=True, title=None, tickformat='.2%')
 
