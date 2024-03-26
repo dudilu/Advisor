@@ -832,7 +832,7 @@ elif selected == "🚀 Strategic Performance":
 
     with rows[2][1]:
         fig = px.bar(df_cagr, x='Year', y=['Moolah', 'SPY'],
-                     title='Compound Annual Growth Rate per Year',
+                     title='Annual Return By Year',
                      barmode='group',
                      color_discrete_map={'Moolah': 'green', 'SPY': 'red'},
                      height=500)
