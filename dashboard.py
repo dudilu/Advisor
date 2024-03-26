@@ -70,8 +70,9 @@ def display_image(url):
 def calculate_cagr(df, column):
     first_value = df[column].iloc[0]
     last_value = df[column].iloc[-1]
-    num_years = (df['Date'].iloc[-1] - df['Date'].iloc[0]).days / 365.25
-    cagr = (last_value / first_value) ** (1 / num_years) - 1
+    cagr = (last_value - first_value)/first_value
+    #num_years = (df['Date'].iloc[-1] - df['Date'].iloc[0]).days / 365.25
+    #cagr = (last_value / first_value) ** (1 / num_years) - 1
     return cagr * 100
 def is_valid_email(email):
     """
