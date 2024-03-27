@@ -70,12 +70,16 @@ def display_image(url):
 def calculate_cagr(df, column):
     first_value = df[column].iloc[0]
     last_value = df[column].iloc[-1]
-    if column == 'cumulative':
-        num_years = (df['Date'].iloc[-1] - df['Date'].iloc[0]).days / 365.25
-        cagr = (last_value / first_value) ** (1 / num_years) - 1
-    else:
-        cagr = (last_value - first_value) / first_value
+    num_years = (df['Date'].iloc[-1] - df['Date'].iloc[0]).days / 365.25
+    cagr = (last_value / first_value) ** (1 / num_years) - 1
     return cagr * 100
+    
+def calculate_return(df, column):
+    first_value = df[column].iloc[0]
+    last_value = df[column].iloc[-1]
+    cagr = (last_value - first_value) / first_value
+    return cagr * 100
+    
 def is_valid_email(email):
     """
     Check if the email address is valid.
@@ -820,8 +824,8 @@ elif selected == "🚀 Strategic Performance":
     years = performance['Date'].dt.year.unique()
     cagr_data = {
         'Year': years,
-        'Moolah': [calculate_cagr(performance[performance['Date'].dt.year == year], 'cumulative') for year in years],
-        'SPY': [calculate_cagr(performance[performance['Date'].dt.year == year], 'SPY_Price') for year in years]
+        'Moolah': [calculate_return(performance[performance['Date'].dt.year == year], 'cumulative') for year in years],
+        'SPY': [calculate_return(performance[performance['Date'].dt.year == year], 'SPY_Price') for year in years]
     }
     df_cagr = pd.DataFrame(cagr_data)
     df_cagr['Moolah'] = df_cagr['Moolah']/100
